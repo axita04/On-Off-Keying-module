@@ -1,0 +1,5 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('on-off-keying-module-example', ['on-off-keying-module'])
+    obj.source = 'on-off-keying-module-example.cc'
