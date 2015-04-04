@@ -27,7 +27,7 @@ def build(bld):
         'model/on-off-keying-module.h',
         'helper/on-off-keying-module-helper.h',
         'model/on-off-keying-net-device.h',
-        'model/on-off-keying-chennel.h',
+        'model/on-off-keying-channel.h',
         ]
 
     if bld.env.ENABLE_EXAMPLES:
