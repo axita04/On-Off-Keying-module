@@ -38,7 +38,7 @@ void OOKHeader::Print(std::ostream &os) const {
 		default;
 			NS_ASSERT_MSG(false, "OOK Protocol number not defined!");
 	}
-	os << "Point-to-Point Protocol: " << proto;
+	os << "OOK Protocol: " << proto;
 }
 
 uint32_t OOKHeader::GetSerializedSize(void) const {
