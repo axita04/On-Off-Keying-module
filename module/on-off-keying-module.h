@@ -9,6 +9,6 @@
 #include "on-off-keying-channel.h"
 #include "on-off-keying-helper.h"
 #include "on-off-keying-net-device.h"
-//#include "OOKP-header.h"
+#include "OOK-header.h"
 #define ON_OFF_KEYING_MODULE_H
 #endif ON_OFF_KEYING_MODULE_H
