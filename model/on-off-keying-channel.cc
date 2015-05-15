@@ -22,6 +22,7 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "on-off-keying-net-device.h"
 
 namespace ns3 {
 
@@ -40,11 +41,11 @@ OOKChannel::GetTypeId (void)
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&OOKChannel::m_delay),
                    MakeTimeChecker ())
-    .AddTraceSource ("TxRxPointToPoint",
+    .AddTraceSource ("TxRxOOK",
                      "Trace source indicating transmission of packet "
                      "from the PointToPointChannel, used by the Animation "
                      "interface.",
-                     MakeTraceSourceAccessor (&PointToPointChannel::m_txrxPointToPoint),
+                     MakeTraceSourceAccessor (&OOKChannel::m_txrxPointToPoint),
                      "ns3::OOKChannel::TxRxAnimationCallback")
   ;
   return tid;
@@ -63,7 +64,7 @@ OOKChannel::OOKChannel()
 }
 
 void
-OOKChannel::Attach (Ptr<OOKNetDevice> device)
+OOKChannel::Attach (Ptr<OnOffKeyingNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
   NS_ASSERT_MSG (m_nDevices < N_DEVICES, "Only two devices permitted");
@@ -86,7 +87,7 @@ OOKChannel::Attach (Ptr<OOKNetDevice> device)
 bool
 OOKChannel::TransmitStart (
   Ptr<Packet> p,
-  Ptr<OOKNetDevice> src,
+  Ptr<OnOffKeyingNetDevice> src,
   Time txTime)
 {
   NS_LOG_FUNCTION (this << p << src);
@@ -98,11 +99,11 @@ OOKChannel::TransmitStart (
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
 
   Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
-                                  txTime + m_delay, &OOKNetDevice::Receive,
+                                  txTime + m_delay, &OnOffKeyingNetDevice::Receive,
                                   m_link[wire].m_dst, p);
 
   // Call the tx anim callback on the net device
-  m_txrxOOK (p, src, m_link[wire].m_dst, txTime, txTime + m_delay);
+  m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, txTime + m_delay);
   return true;
 }
 
@@ -113,7 +114,7 @@ OOKChannel::GetNDevices (void) const
   return m_nDevices;
 }
 
-Ptr<OOKNetDevice>
+Ptr<OnOffKeyingNetDevice>
 OOKChannel::GetOOKDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -134,13 +135,13 @@ OOKChannel::GetDelay (void) const
   return m_delay;
 }
 
-Ptr<OOKNetDevice>
+Ptr<OnOffKeyingNetDevice>
 OOKChannel::GetSource (uint32_t i) const
 {
   return m_link[i].m_src;
 }
 
-Ptr<OOKNetDevice>
+Ptr<OnOffKeyingNetDevice>
 OOKChannel::GetDestination (uint32_t i) const
 {
   return m_link[i].m_dst;
