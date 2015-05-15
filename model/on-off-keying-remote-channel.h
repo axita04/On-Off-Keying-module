@@ -56,12 +56,11 @@ public:
    * \param txTime Transmit time to apply
    * \returns true if successful (currently always true)
    */
-  virtual bool TransmitStart (Ptr<Packet> p, Ptr<OOKNetDevice> src,
+  virtual bool TransmitStart (Ptr<Packet> p, Ptr<OnOffKeyingNetDevice> src,
                               Time txTime);
 };
 
 } // namespace ns3
 
 #endif
-
 
