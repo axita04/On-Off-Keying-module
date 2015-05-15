@@ -3,7 +3,13 @@
 #ifndef ON_OFF_KEYING_MODULE_HELPER_H
 #define ON_OFF_KEYING_MODULE_HELPER_H
 
-#include "ns3/on-off-keying-module.h"
+#include <string>
+//#include "ns3/on-off-keying-module.h"
+#include "ns3/object-factory.h"
+#include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+
+#include "ns3/trace-helper.h"
 
 namespace ns3 {
 
@@ -11,14 +17,16 @@ class Queue;
 class NetDevice;
 class Node;
 
-class OOKHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice{
+class OOKHelper : public PcapHelperForDevice, 
+                  public AsciiTraceHelperForDevice
+{
 
 public:
 	OOKHelper();
 	virtual ~OOKHelper(){}
 
 
-	void SetQueue(str::string type, std::string n1= "", const AttributeValue &v1 = EmptyAttributeValue(),
+	void SetQueue(std::string type, std::string n1= "", const AttributeValue &v1 = EmptyAttributeValue(),
 					std::string n2 = "" ,const AttributeValue &v2 = EmptyAttributeValue(),
 					std::string n3 = "" ,const AttributeValue &v3 = EmptyAttributeValue(),
 					std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue());
@@ -30,6 +38,8 @@ public:
 	NetDeviceContainer Install(NodeContainer c);
 
 	NetDeviceContainer Install(Ptr<Node> a, Ptr<Node> b);
+
+	NetDeviceContainer Install(std::string aname, Ptr<Node> b);
 
 	NetDeviceContainer Install(Ptr<Node> a, std::string bname);
 
