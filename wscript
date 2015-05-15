@@ -9,11 +9,12 @@ def configure(conf):
 def build(bld):
     module = bld.create_ns3_module('on-off-keying-module', ['core','network', 'mpi'])
     module.source = [
-        'model/on-off-keying-module.cc',
+       # 'model/on-off-keying-module.cc',
         'helper/on-off-keying-module-helper.cc',
         'model/on-off-keying-channel.cc',
         'model/on-off-keying-net-device.cc',
-
+        'model/on-off-keying-remote-channel.cc',
+        'model/OOK-header.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('on-off-keying-module')
@@ -24,13 +25,15 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'on-off-keying-module'
     headers.source = [
-        'model/on-off-keying-module.h',
+        #'model/on-off-keying-module.h',
         'helper/on-off-keying-module-helper.h',
         'model/on-off-keying-net-device.h',
         'model/on-off-keying-channel.h',
+        'model/on-off-keying-remote-channel.h',
+        'model/OOK-header.h',
         ]
 
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse('examples')
-
-    bld.ns3_python_bindings()
+    
+    #bld.ns3_python_bindings()
