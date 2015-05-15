@@ -22,10 +22,13 @@ Description:
 //installing the actual module
 
 Prerequisites:
+
 -Having the NS3 environment installed and running in your linux environment
+
 -ability to open .zip files
 
 Installation:
+
 1) download .zip file in this repository: https://github.com/RyanAckerman/On-Off-Keying-module
 
 2) open .zip file and you should see a simple folder named On-Off-Keying-module-master
