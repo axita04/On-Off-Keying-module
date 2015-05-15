@@ -1,11 +1,10 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 // Include a header file from your module to test.
-#include "ns3/on-off-keying-module.h"
-
+//#include "ns3/on-off-keying-module.h"
 // An essential include is test.h
 #include "ns3/test.h"
-
+#include "ns3/on-off-keying-module-helper.h"
 // Do not put your test classes in namespace ns3.  You may find it useful
 // to use the using directive to access the ns3 namespace directly
 using namespace ns3;
