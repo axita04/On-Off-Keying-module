@@ -15,7 +15,8 @@ Once an example script is made and compiles, to run this script it must be in th
 NS-3 file documentation: https://www.nsnam.org/doxygen/index.html
 
 Description:
-Currently this module mimcs that of a point to point connection but it will soon be akin to that of an OOK modulation scheme through an optical light channel. The main module files are in the model folder and the helper is there to make seting objects of this type in a script easier and require less overhead.
+                Currently this module mimcs that of a point to point connection but it will soon be akin to that of an OOK modulation scheme through an optical light channel. The main module files are in the model folder and the helper is there to make seting objects of this type in a script easier and require less overhead. 
+                The Scratch folder included, has a couple of example scripts that show how the module objects are used in a simulation. The first script is a simple connection between two nodes using the OOK connection and the other script is an example of using this connection in conjunctions with other connections such as a wifi connection.
 
 
 //installing the actual module
@@ -26,13 +27,23 @@ Prerequisites:
 
 Installation:
 1) download .zip file in this repository: https://github.com/RyanAckerman/On-Off-Keying-module
+
 2) open .zip file and you should see a simple folder named On-Off-Keying-module-master
+
 3) enter that folder and you should see folders that mimic the ones in the repository
-4) now, find your NS3 files(if you have followed the tutorial above for installing you should be able to figure out where it is)
-5) In those files there is a folder titled "src", go into that folder
-6) you should now see all the modules that NS3 builds and are available, simply make a new folder in "src" titled "On-Off-Keying-module"
-7) Look back to where you unziped the downloaded repository files and copy and paste those folders and files into this newly made folder
+
+4) Now, go into the terminal and build a skeleton module by typing "./create-module.py on-off-keying-module"
+
+5) Find your NS3 file system and in the "src" folder there should be an on-off-keying-module folder, open that and you should see similar folder names to that of the repository.
+
+6) you should delete those files as they will be replaced by the files downloaded from the repository
+
+7) Look back to where you unziped the downloaded repository files and copy and paste those folders and files into this newly made folder (DO NOT COPY THE SCRATCH FILE OVER AS IT IS NOT NEEDED IN THE MODULE FOLDER)
+
 8) Now, start up the terminal and go to the ns-3-dev directory
+
 9) While in this directory build all the NS3 modules (if unsure use the installation guide to help, I use ubuntu and my command is ./waf build)
+
 10) It is optional to enable tests and examples but it should build regardless
+
 11) It may take a while but it should build, and now you can use the on-off-keying-module in NS3 simulations
