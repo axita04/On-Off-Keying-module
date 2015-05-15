@@ -142,8 +142,8 @@ def register_types(module):
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    ## OOK-header.h (module 'on-off-keying'): ns3::OokHeader [class]
-    module.add_class('OokHeader', parent=root_module['ns3::Header'])
+    ## OOK-header.h (module 'on-off-keying'): ns3::OOkHeader [class]
+    module.add_class('OOKHeader', parent=root_module['ns3::Header'])
     ## queue.h (module 'network'): ns3::Queue [class]
     module.add_class('Queue', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## queue.h (module 'network'): ns3::Queue::QueueMode [enumeration]
@@ -397,7 +397,7 @@ def register_methods(root_module):
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
-    register_Ns3OokHeader_methods(root_module, root_module['ns3::OokHeader'])
+    register_Ns3OOkHeader_methods(root_module, root_module['ns3::OOkHeader'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3RandomVariableStream_methods(root_module, root_module['ns3::RandomVariableStream'])
     register_Ns3SequentialRandomVariable_methods(root_module, root_module['ns3::SequentialRandomVariable'])
@@ -2956,11 +2956,11 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
     return
 
 def register_Ns3OokHeader_methods(root_module, cls):
-    ## ook-header.h (module 'on-off-keying'): ns3::OokHeader::OokHeader(ns3::OokHeader const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OokHeader const &', 'arg0')])
-    ## ook-header.h (module 'on-off-keying'): ns3::OokHeader::OokHeader() [constructor]
+    ## OOK-header.h (module 'on-off-keying'): ns3::OOKHeader::OOKHeader(ns3::OOKHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OOKHeader const &', 'arg0')])
+    ## OOK-header.h (module 'on-off-keying'): ns3::OOKHeader::OOKHeader() [constructor]
     cls.add_constructor([])
-    ## ook-header.h (module 'on-off-keying'): uint32_t ns3::OokHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    ## OOK-header.h (module 'on-off-keying'): uint32_t ns3::OOKHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
@@ -5720,4 +5720,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
