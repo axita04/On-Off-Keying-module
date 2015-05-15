@@ -35,7 +35,7 @@ void OOKHeader::Print(std::ostream &os) const {
 		case 0x0057:
 			proto = "IPv6 (0x0057)";
 			break;
-		default;
+		default:
 			NS_ASSERT_MSG(false, "OOK Protocol number not defined!");
 	}
 	os << "OOK Protocol: " << proto;
@@ -63,4 +63,3 @@ uint16_t OOKHeader::GetProtocol(void){
 }
 
 }
-
