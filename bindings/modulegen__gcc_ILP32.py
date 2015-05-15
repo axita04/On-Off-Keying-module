@@ -2850,8 +2850,7 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   visibility='protected', is_virtual=True)
-    ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
+                   visibility='protected', is_virtual=True) function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
