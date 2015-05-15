@@ -40,6 +40,7 @@ OnOffKeyingNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::OnOffKeyingNetDevice")
     .SetParent<NetDevice> ()
+    .SetGroupName("OOK")
     .AddConstructor<OnOffKeyingNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
                    UintegerValue (DEFAULT_MTU),
@@ -297,7 +298,7 @@ OnOffKeyingNetDevice::TransmitComplete (void)
 }
 
 bool
-OnOffKeyingNetDevice::Attach (Ptr<OnOffKeyingChannel> ch)
+OnOffKeyingNetDevice::Attach (Ptr<OOKChannel> ch)
 {
   NS_LOG_FUNCTION (this << &ch);
 
@@ -490,7 +491,7 @@ OnOffKeyingNetDevice::GetMulticast (Ipv6Address addr) const
 }
 
 bool
-OnOffKeyingNetDevice::IsOOK (void) const
+OnOffKeyingNetDevice::IsPointToPoint (void) const
 {
   NS_LOG_FUNCTION (this);
   return true;
