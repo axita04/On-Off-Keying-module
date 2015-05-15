@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/traced-callback.h"
+#include "on-off-keying-net-device.h"
 
 namespace ns3 {
 
@@ -54,7 +55,7 @@ public:
    * \brief Attach a given netdevice to this channel
    * \param device pointer to the netdevice to attach to the channel
    */
-  void Attach (Ptr<OOKNetDevice> device);
+  void Attach (Ptr<OnOffKeyingNetDevice> device);
 
   /**
    * \brief Transmit a packet over this channel
@@ -63,7 +64,7 @@ public:
    * \param txTime Transmit time to apply
    * \returns true if successful (currently always true)
    */
-  virtual bool TransmitStart (Ptr<Packet> p, Ptr<OOKNetDevice> src, Time txTime);
+  virtual bool TransmitStart (Ptr<Packet> p, Ptr<OnOffKeyingNetDevice> src, Time txTime);
 
   /**
    * \brief Get number of devices on this channel
@@ -76,7 +77,7 @@ public:
    * \param i Index number of the device requested
    * \returns Ptr to PointToPointNetDevice requested
    */
-  Ptr<OOKNetDevice> GetOOKDevice (uint32_t i) const;
+  Ptr<OnOffKeyingNetDevice> GetOOKDevice (uint32_t i) const;
 
   /**
    * \brief Get NetDevice corresponding to index i on this channel
@@ -104,7 +105,7 @@ protected:
    * \returns Ptr to PointToPointNetDevice source for the 
    * specified link
    */
-  Ptr<OOKNetDevice> GetSource (uint32_t i) const;
+  Ptr<OnOffKeyingNetDevice> GetSource (uint32_t i) const;
 
   /**
    * \brief Get the net-device destination
@@ -112,7 +113,7 @@ protected:
    * \returns Ptr to PointToPointNetDevice destination for 
    * the specified link
    */
-  Ptr<OOKNetDevice> GetDestination (uint32_t i) const;
+  Ptr<OnOffKeyingNetDevice> GetDestination (uint32_t i) const;
 
   /**
    * TracedCallback signature for packet transmission animation events.
@@ -178,8 +179,8 @@ public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
 
     WireState                  m_state; //!< State of the link
-    Ptr<OOKNetDevice> m_src;   //!< First NetDevice
-    Ptr<OOKNetDevice> m_dst;   //!< Second NetDevice
+    Ptr<OnOffKeyingNetDevice> m_src;   //!< First NetDevice
+    Ptr<OnOffKeyingNetDevice> m_dst;   //!< Second NetDevice
   };
 
   Link    m_link[N_DEVICES]; //!< Link model
