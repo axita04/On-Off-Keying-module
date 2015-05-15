@@ -55,7 +55,7 @@ OOKRemoteChannel::~OOKRemoteChannel ()
 bool
 OOKRemoteChannel::TransmitStart (
   Ptr<Packet> p,
-  Ptr<OOKNetDevice> src,
+  Ptr<OnOffKeyingNetDevice> src,
   Time txTime)
 {
   NS_LOG_FUNCTION (this << p << src);
@@ -64,7 +64,7 @@ OOKRemoteChannel::TransmitStart (
   IsInitialized ();
 
   uint32_t wire = src == GetSource (0) ? 0 : 1;
-  Ptr<OOKNetDevice> dst = GetDestination (wire);
+  Ptr<OnOffKeyingNetDevice> dst = GetDestination (wire);
 
 #ifdef NS3_MPI
   // Calculate the rxTime (absolute)
