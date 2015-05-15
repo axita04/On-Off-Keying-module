@@ -101,7 +101,7 @@ public:
    * \param ch Ptr to the channel to which this object is being attached.
    * \return true if the operation was successfull (always true actually)
    */
-  bool Attach (Ptr<on-off-keying-channel> ch);
+  bool Attach (Ptr<OOKChannel> ch);
 
   /**
    * Attach a queue to the OnOffKeyingNetDevice.
@@ -170,7 +170,7 @@ public:
   virtual bool IsMulticast (void) const;
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
 
-  virtual bool IsOOK (void) const;
+  virtual bool IsPointToPoint (void) const;
   virtual bool IsBridge (void) const;
 
   virtual bool Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber);
