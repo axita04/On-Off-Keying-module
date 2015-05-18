@@ -55,5 +55,7 @@ Installation:
 //Running a script
 
 1) create a file a .cc file and follow the format that the example scripts use (in terms of laying out the script)
+
 2) move the file into the /scratch directory
+
 3) to compile and run use the command "./waf --run scratch/<filename>"
