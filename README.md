@@ -50,3 +50,10 @@ Installation:
 10) It is optional to enable tests and examples but it should build regardless
 
 11) It may take a while but it should build, and now you can use the on-off-keying-module in NS3 simulations
+
+
+//Running a script
+
+1) create a file a .cc file and follow the format that the example scripts use (in terms of laying out the script)
+2) move the file into the /scratch directory
+3) to compile and run use the command "./waf --run scratch/<filename>"
