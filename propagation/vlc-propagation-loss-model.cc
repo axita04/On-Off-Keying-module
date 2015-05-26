@@ -98,7 +98,7 @@ VLCPropagationLossModel::GetTxPower ()
 void
 VLCPropagationLossModel::SetLambertianOrder (double semiangle)
 {
-  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle)));
+  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
 }
 
 double
@@ -120,13 +120,13 @@ VLCPropagationLossModel::GetFilterGain ()
 }
 
 void
-VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex,Ptr<MobilityModel> a, Ptr<MobilityModel> b)
+VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex)//,Ptr<MobilityModel> a, Ptr<MobilityModel> b)
 {
-  if(fov < GetIncidenceAngle(a,b)) {
+  /*if(fov < GetIncidenceAngle(a,b)) {
         m_ConcentratorGain = 0;
-  }else{
+  }else{*/
         m_ConcentratorGain = std::pow(refracIndex,2) / std::pow(std::sin(fov),2);
-  }
+  //}
 }
 
 double
