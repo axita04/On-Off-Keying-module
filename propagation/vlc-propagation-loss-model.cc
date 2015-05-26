@@ -120,9 +120,13 @@ VLCPropagationLossModel::GetFilterGain ()
 }
 
 void
-VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex)
+VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex,Ptr<MobilityModel> a, Ptr<MobilityModel> b)
 {
-  m_ConcentratorGain = std::pow(refracIndex,2) / std::pow(std::sin(fov),2);
+  if(fov < GetIncidenceAngle(a,b)) {
+        m_ConcentratorGain = 0;
+  }else{
+        m_ConcentratorGain = std::pow(refracIndex,2) / std::pow(std::sin(fov),2);
+  }
 }
 
 double
@@ -165,6 +169,7 @@ return 90 - (GetRadianceAngle(a,b));
 double
 VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
+
   return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));
 }
 
