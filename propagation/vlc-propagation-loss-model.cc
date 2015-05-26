@@ -157,13 +157,13 @@ double
 VLCPropagationLossModel::GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
 double x = std::abs(a->GetPosition().x - b->GetPosition().x);
-return std::asin(x / (GetDistance(a,b)));
+return std::asin(((x / (GetDistance(a,b))) * (M_PI / 180)));
 }
 
 double
 VLCPropagationLossModel::GetIncidenceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-return 90 - (GetRadianceAngle(a,b));
+return (GetRadianceAngle(a,b));
 }
 
 double
