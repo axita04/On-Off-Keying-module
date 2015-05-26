@@ -20,6 +20,9 @@
 #include "ns3/internet-module.h"
 #include "ns3/on-off-keying-module-helper.h"
 #include "ns3/applications-module.h"
+#include "ns3/Aerror-model.h"
+#include "ns3/vlc-propagation-loss-model.h"
+#include "ns3/constant-position-mobility-model.h"
 
 using namespace ns3;
 
@@ -181,13 +184,33 @@ main (int argc, char *argv[])
   OOKHelper OOK;
   OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
-
+//-----------------------------------------------------------------
   NetDeviceContainer devices;
   devices = OOK.Install (nodes);
 
-  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  em->SetAttribute ("ErrorRate", DoubleValue (0.00001));
-  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
+  Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
+  Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();  
+
+  a -> SetPosition (Vector (0.0,0.0,0.0));
+  b -> SetPosition (Vector (0.63,0.0,0.0));
+  AErrorModel *em2 ;
+  AErrorModel x;
+  em2 = &x;
+
+  VLCPropagationLossModel VPLM;
+  VPLM.SetTxPower(48.573);
+  VPLM.SetLambertianOrder(70);
+  VPLM.SetFilterGain(1);
+  VPLM.SetPhotoDetectorArea(1.0e-4);
+  VPLM.SetConcentratorGain(70,1.0,a,b);
+
+
+  x.setNo(1.0e-3);
+  x.setEb(VPLM.GetRxPower(a,b));
+
+  //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
+  //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
 
   InternetStackHelper stack;
   stack.Install (nodes);
