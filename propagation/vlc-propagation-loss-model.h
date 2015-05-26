@@ -44,7 +44,8 @@ public:
   double GetLambertianOrder();
   void SetFilterGain(double gain);
   double GetFilterGain();
-  void SetConcentratorGain(double fov, double refracIndex, Ptr<MobilityModel> a, Ptr<MobilityModel> b);
+  void SetConcentratorGain(double fov, double refracIndex);
+//, Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   double GetConcentratorGain();
   void SetPhotoDetectorArea(double area);
   double GetPhotoDetectorArea();
