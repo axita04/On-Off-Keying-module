@@ -98,7 +98,7 @@ VLCPropagationLossModel::GetTxPower ()
 void
 VLCPropagationLossModel::SetLambertianOrder (double semiangle)
 {
-  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
+  m_LambertianOrder = ( (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
 }
 
 double
@@ -157,7 +157,8 @@ double
 VLCPropagationLossModel::GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
 double x = std::abs(a->GetPosition().x - b->GetPosition().x);
-return std::asin(((x / (GetDistance(a,b))) * (M_PI / 180)));
+double y = std::abs(a->GetPosition().y - b->GetPosition().y);
+return std::atan((x / y) * (M_PI / 180));
 }
 
 double
