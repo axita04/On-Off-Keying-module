@@ -98,7 +98,7 @@ VLCPropagationLossModel::GetTxPower ()
 void
 VLCPropagationLossModel::SetLambertianOrder (double semiangle)
 {
-  m_LambertianOrder = ( (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
+  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
 }
 
 double
