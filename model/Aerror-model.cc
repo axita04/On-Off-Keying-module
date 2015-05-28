@@ -76,7 +76,7 @@ void AErrorModel::DoReset(void){
 
 double AErrorModel::calculateBER (){
 calculateEb();
-double BER = 0.5*erfc(0.5 *(1/std:sqrt(2))*std::sqrt(Eb/No));
+double BER = 0.5*erfc(0.5 *(1/std::sqrt(2))*std::sqrt(Eb/No));
 //std::cout<< " Eb/No : " <<(Eb/No) << std::endl;
 return BER;
 }
