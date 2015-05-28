@@ -6,6 +6,7 @@
 #include "ns3/object.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/error-model.h"
+#include "ns3/traced-value.h"
 
 
 namespace ns3 {
@@ -32,19 +33,38 @@ public:
 
   static double calculateBER ();
 
+  static void calculateEb();
+
   static void setNo (double n);
 
-  static void setEb (double e);
+  static void setRx (double x);
 
-  //static double N0;
-  
+  static void setRb (double b);
+
+  static void setRes (double r);
+
+  static double getEb(void);
+
+  static double getBER(void);
+
+   
 private:
 
 virtual bool DoCorrupt(Ptr<Packet> p);
 
 virtual void DoReset(void);
 
+virtual bool DoCorruptPkt(Ptr<Packet> p);
 
+virtual bool DoCorruptByte(Ptr<Packet> p);
+
+virtual bool DoCorruptBit(Ptr<Packet> p);
+
+enum ErrorUnit m_unit;
+
+double m_rate;
+
+Ptr<RandomVariableStream> m_ranvar;
   
 };
 
