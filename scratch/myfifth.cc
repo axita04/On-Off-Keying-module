@@ -23,6 +23,7 @@
 #include "ns3/Aerror-model.h"
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/constant-velocity-mobility-model.h"
 
 using namespace ns3;
 
@@ -162,11 +163,11 @@ MyApp::ScheduleTx (void)
       m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
     }
 }
-
+/*
 static void
 CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ());
 }
 
 static void
@@ -174,11 +175,16 @@ RxDrop (Ptr<const Packet> p)
 {
   NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
 }
-
+*/
 int 
 main (int argc, char *argv[])
 {
-  NodeContainer nodes;
+
+
+
+for(double currentD = 0.0; currentD < 5.0 ; currentD += .05){
+//for(int count = 5 ; count < 10 ; count++){  
+NodeContainer nodes;
   nodes.Create (2);
 
   OOKHelper OOK;
@@ -192,7 +198,7 @@ main (int argc, char *argv[])
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();  
 
   a -> SetPosition (Vector (0.0,0.0,0.0));
-  b -> SetPosition (Vector (0.63,0.0,0.0));
+  b -> SetPosition (Vector (0.0,currentD,0.0));
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
@@ -202,11 +208,20 @@ main (int argc, char *argv[])
   VPLM.SetLambertianOrder(70);
   VPLM.SetFilterGain(1);
   VPLM.SetPhotoDetectorArea(1.0e-4);
-  VPLM.SetConcentratorGain(70,1.0,a,b);
+  VPLM.SetConcentratorGain(70,1.5);
 
+  em2->setRes(1.0);
+  em2->setNo(1.0e-3);
+  em2->setRb(1.0e6);
+  em2->setRx(VPLM.GetRxPower(a,b));
 
-  x.setNo(1.0e-3);
-  x.setEb(VPLM.GetRxPower(a,b));
+  std::cout<<"------------------------"<< std::endl;
+   std::cout<<"BER : " <<x.getBER()<<std::endl;
+  std::cout<<"Radiance Angle : " <<VPLM.GetRadianceAngle(a,b)<<std::endl;
+  std::cout<<"Distance : " <<VPLM.GetDistance(a,b)<< " m" <<std::endl;
+  std::cout<<"Energy per Bit : " <<x.getEb()<<std::endl;
+  std::cout<<"RxPower : " << VPLM.GetRxPower(a,b)<<std::endl;
+
 
   //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
@@ -227,18 +242,22 @@ main (int argc, char *argv[])
   sinkApps.Stop (Seconds (20.));
 
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
+// ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
 
   Ptr<MyApp> app = CreateObject<MyApp> ();
-  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
+  app->Setup (ns3TcpSocket, sinkAddress, 1040, 10, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20.));
 
-  devices.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&RxDrop));
+ // devices.Get (1)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&RxDrop));
 
   Simulator::Stop (Seconds (20));
   Simulator::Run ();
+  Simulator::Destroy();
+  
+}
+
   Simulator::Destroy ();
 
   return 0;
