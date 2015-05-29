@@ -74,11 +74,8 @@ void AErrorModel::DoReset(void){
 }
 
 double AErrorModel::calculateBER (){
-calculateEb();
-SNR = std::pow((Rx*Res),2)/No;
-double correctSNR = 10 * std::log10(SNR);
-double BER = 0.5*erfc(std::sqrt(correctSNR/2));
-//std::cout<< " SNR : " <<(SNR) << std::endl;
+SNR = 10 * std::log10(std::pow((Rx*Res),2)/No);
+double BER = 0.5*erfc(std::sqrt(SNR/2));
 return BER;
 }
 
@@ -114,7 +111,7 @@ double AErrorModel::getBER(void){
 return BER;
 }
 double AErrorModel::getSNR(void){
-return 10*std::log10(SNR);
+return SNR;
 }
 
 } // namespace ns3
