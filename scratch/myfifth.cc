@@ -211,7 +211,7 @@ NodeContainer nodes;
   VPLM.SetConcentratorGain(70,1.5);
 
   em2->setRes(0.28);
-  em2->setNo(1.0e-3);
+  em2->setNo(1.0e-14);
   em2->setRb(1.0e6);
   em2->setRx(VPLM.GetRxPower(a,b));
 
@@ -219,9 +219,9 @@ NodeContainer nodes;
    std::cout<<"BER : " <<x.getBER()<<std::endl;
   std::cout<<"Radiance Angle : " <<VPLM.GetRadianceAngle(a,b)<<std::endl;
   std::cout<<"Distance : " <<VPLM.GetDistance(a,b)<< " m" <<std::endl;
-  std::cout<<"Energy per Bit : " <<x.getEb()<<std::endl;
+  //std::cout<<"Energy per Bit : " <<x.getEb()<<std::endl;
   std::cout<<"RxPower : " << VPLM.GetRxPower(a,b)<<std::endl;
-
+  std::cout<<"SNR : " << std::pow(x.getSNR(),2)<<std::endl;
 
   //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
