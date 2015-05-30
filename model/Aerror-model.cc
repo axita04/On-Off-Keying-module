@@ -19,6 +19,8 @@
 #include "ns3/pointer.h"
 #include "ns3/traced-value.h"
 #include "ns3/trace-source-accessor.h"
+#include <time.h>
+#include <stdlib.h>
 
 namespace ns3 {
 
@@ -44,6 +46,7 @@ double SNR = 0;
 AErrorModel::AErrorModel ()
 {
   NS_LOG_FUNCTION (this);
+  srand(time(NULL));
 }
 
 AErrorModel::~AErrorModel () 
@@ -65,8 +68,10 @@ bool AErrorModel::DoCorrupt(Ptr<Packet> p){
 	NS_LOG_FUNCTION(this << p);
 	BER = calculateBER();
 	double per = 1.0 - (double)std::pow((double)(1.0 - BER), static_cast<double>(8*p->GetSize()));
+        
 	double rnd  = (double) rand()/(double)(RAND_MAX);
-	return (rnd < per);
+
+        return (rnd < per);
 }
 void AErrorModel::DoReset(void){
 
@@ -75,7 +80,13 @@ void AErrorModel::DoReset(void){
 
 double AErrorModel::calculateBER (){
 SNR = 10 * std::log10(std::pow((Rx*Res),2)/No);
-double BER = 0.5*erfc(std::sqrt(SNR/2));
+double BER;
+if(SNR > 0){
+BER = 0.5*erfc(std::sqrt(SNR/2));
+}else{
+BER = 1;
+}
+
 return BER;
 }
 
