@@ -24,6 +24,8 @@
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/constant-velocity-mobility-model.h"
+#include "ns3/gnuplot.h"
+
 
 using namespace ns3;
 
@@ -160,43 +162,51 @@ MyApp::ScheduleTx (void)
       m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
     }
 }
-int countSent = 0;
-int countReceived = 0;
-int countDropped = 0;
+double countSent = 0;
+double countReceived = 0;
+double countDropped = 0;
 
 static void
 RxDrop (Ptr<const Packet> p)
 {
-  countDropped ++;
+  countDropped += 1.0;
  // NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
 }
 static void
 RxEnd (Ptr<const Packet> p)
 {
-  countReceived ++;
+  countReceived += 1.0;
  // NS_LOG_UNCOND ("Rx Received at " << Simulator::Now().GetSeconds());
 }
 static void
 TxEnd (Ptr<const Packet> p)
 {
-  countSent ++;
+  countSent += 1.0;
  // NS_LOG_UNCOND ("Tx Sent at " << Simulator::Now().GetSeconds());
 }
+
+
+
+
+
 
 
 int 
 main (int argc, char *argv[])
 {
+Gnuplot plot;
 
+  plot.AppendExtra ("set xlabel 'Noise Power'");
+  plot.AppendExtra ("set ylabel 'Bit Error Rate'");
+  plot.AppendExtra ("set key top right");
+ Gnuplot2dDataset dataset;
+ dataset.SetStyle (Gnuplot2dDataset::LINES);
 
-
-
-//for(int count = 5 ; count < 10 ; count++){  
+for(double currentNoise = 1.0e-11 ; currentNoise > 1.0e-12  ; currentNoise -= 1.0e-13){  
 NodeContainer nodes;
   nodes.Create (2);
-
   OOKHelper OOK;
-  OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  OOK.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
 //-----------------------------------------------------------------
   NetDeviceContainer devices;
@@ -206,7 +216,7 @@ NodeContainer nodes;
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();  
 
   a -> SetPosition (Vector (0.0,0.0,0.0));
-  b -> SetPosition (Vector (0.0,100.0,0.0));
+  b -> SetPosition (Vector (0.0,5.0,0.0));
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
@@ -219,18 +229,12 @@ NodeContainer nodes;
   VPLM.SetConcentratorGain(70,1.5);
 
   em2->setRes(0.28);
-  em2->setNo(1.0e-14);
+  em2->setNo(currentNoise);
   em2->setRb(1.0e6);
   em2->setRx(VPLM.GetRxPower(a,b));
-/*
-  std::cout<<"------------------------"<< std::endl;
-   std::cout<<"BER : " <<x.getBER()<<std::endl;
-  std::cout<<"Radiance Angle : " <<VPLM.GetRadianceAngle(a,b)<<std::endl;
-  std::cout<<"Distance : " <<VPLM.GetDistance(a,b)<< " m" <<std::endl;
-  //std::cout<<"Energy per Bit : " <<x.getEb()<<std::endl;
-  std::cout<<"RxPower : " << VPLM.GetRxPower(a,b)<<std::endl;
-  std::cout<<"SNR : " << x.getSNR()<<std::endl;
-*/
+
+  
+
   //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
@@ -269,13 +273,29 @@ NodeContainer nodes;
   Simulator::Stop (Seconds (200));
   Simulator::Run ();
   Simulator::Destroy();
+
+  double throughput = (countReceived / countSent)*(1.0e6);
+
+  dataset.Add(currentNoise, throughput);
+
+  countReceived = 0;
+  countSent = 0;
+  countDropped = 0;
   
+}
 
-  std::cout << "Packets Sent : " << countSent << std::endl;
-  std::cout << "Packets Received : " << countReceived << std::endl;
-  std::cout << "Packets Dropped : " << countDropped << std::endl;
-   
+  std::ostringstream os;
+  os << "txPower " << 48.573 << "dBm";
+  dataset.SetTitle (os.str ());
+  plot.AddDataset (dataset);
+  GnuplotCollection gnuplots ("AErrorModel-Graph.pdf");
+ {
+ // plot.setTitle("ns3::AErrorModel");
+  gnuplots.AddPlot(plot);
+ }
 
+ gnuplots.GenerateOutput(std::cout);
 
+ //Simulator::Destory();
   return 0;
 }
