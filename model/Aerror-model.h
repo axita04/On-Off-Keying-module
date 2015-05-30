@@ -46,6 +46,10 @@ public:
   static double getEb(void);
 
   static double getBER(void);
+  
+  static double getNo(void);
+
+  static double getSNR(void);
 
    
 private:
@@ -54,13 +58,6 @@ virtual bool DoCorrupt(Ptr<Packet> p);
 
 virtual void DoReset(void);
 
-virtual bool DoCorruptPkt(Ptr<Packet> p);
-
-virtual bool DoCorruptByte(Ptr<Packet> p);
-
-virtual bool DoCorruptBit(Ptr<Packet> p);
-
-enum ErrorUnit m_unit;
 
 double m_rate;
 
