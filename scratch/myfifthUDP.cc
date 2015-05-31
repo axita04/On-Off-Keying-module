@@ -272,9 +272,13 @@ NodeContainer nodes;
 
   Simulator::Stop (Seconds (200));
   Simulator::Run ();
+
+  double throughput = (countReceived / Simulator::Now().GetSeconds()) * (1040*8);
+
+
   Simulator::Destroy();
 
-  double throughput = (countReceived / countSent)*(1.0e6);
+
 
   dataset.Add(currentNoise, throughput);
 
