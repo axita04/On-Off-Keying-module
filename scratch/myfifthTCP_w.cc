@@ -291,7 +291,7 @@ NodeContainer nodes;
   //Loop that outputs the throughput vs time
   for (int i = 0; i < rec1; i++)
   {
-      myfile << i+1 << " " << rec[i]*1040 << std::endl;
+      myfile << i+1 << " " << rec[i]*1040*8 << std::endl;
   }
 
   myfile.close();
