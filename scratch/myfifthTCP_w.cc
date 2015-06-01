@@ -216,10 +216,6 @@ int
 main (int argc, char *argv[])
 {
 
-
-
-
-//for(int count = 5 ; count < 10 ; count++){  
 NodeContainer nodes;
   nodes.Create (2);
 
@@ -251,10 +247,7 @@ NodeContainer nodes;
   em2->setRb(1.0e6);
   em2->setRx(VPLM.GetRxPower(a,b));
 
-  
 
-  //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
 
   InternetStackHelper stack;
@@ -291,22 +284,17 @@ NodeContainer nodes;
   Simulator::Run ();
   Simulator::Destroy();
 
+  //will output to a text file called 'text.txt'
+  std::ofstream myfile;
+  myfile.open ("test.txt");
+
+  //Loop that outputs the throughput vs time
   for (int i = 0; i < rec1; i++)
   {
-      std::cout << i+1 << " " << rec[i]*1040 << std::endl;
+      myfile << i+1 << " " << rec[i]*1040 << std::endl;
   }
 
-  /*
-  std::cout<<"------------------------"<< std::endl;
-   std::cout<<"BER : " <<x.getBER()<<std::endl;
-  std::cout<<"Distance : " <<VPLM.GetDistance(a,b)<< " m" <<std::endl;
-  std::cout<<"RxPower : " << VPLM.GetRxPower(a,b)<<std::endl;
-  std::cout<<"SNR : " << x.getSNR()<<std::endl;  
-
-  std::cout << "Packets Sent : " << countSent << std::endl;
-  std::cout << "Packets Received : " << countReceived << std::endl;
-  std::cout << "Packets Dropped : " << countDropped << std::endl;
-  */
+  myfile.close();
 
   return 0;
 }
