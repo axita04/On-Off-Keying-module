@@ -6,7 +6,10 @@
 #include "OOK-header.h"
 
 namespace ns3 {
-
+/*********************
+ * No Change Commaired to Point to Point look at P2P documentation on 
+ * the header file
+ * *****************/
 NS_LOG_COMPONENT_DEFINE("OOKHeader");
 NS_OBJECT_ENSURE_REGISTERED(OOKHeader);
 
