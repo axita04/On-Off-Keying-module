@@ -88,7 +88,7 @@ private:
   bool            m_running;
   uint32_t        m_packetsSent;
 };
-
+//Constructor for Custom App
 MyApp::MyApp ()
   : m_socket (0), 
     m_peer (), 
@@ -100,12 +100,12 @@ MyApp::MyApp ()
     m_packetsSent (0)
 {
 }
-
+//Deconstructor
 MyApp::~MyApp()
 {
   m_socket = 0;
 }
-
+//Sets up the Application will all of the different values in the parameters
 void
 MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
 {
@@ -115,7 +115,7 @@ MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t
   m_nPackets = nPackets;
   m_dataRate = dataRate;
 }
-
+//Start the App and connects to the other node
 void
 MyApp::StartApplication (void)
 {
@@ -125,7 +125,7 @@ MyApp::StartApplication (void)
   m_socket->Connect (m_peer);
   SendPacket ();
 }
-
+//Stop application, cancels all events, and closes the socket
 void 
 MyApp::StopApplication (void)
 {
@@ -141,7 +141,7 @@ MyApp::StopApplication (void)
       m_socket->Close ();
     }
 }
-
+//SchedulsTx each packet needed to be sent
 void 
 MyApp::SendPacket (void)
 {
@@ -153,7 +153,7 @@ MyApp::SendPacket (void)
       ScheduleTx ();
     }
 }
-
+//Schedules a SendPacket in the simulator
 void 
 MyApp::ScheduleTx (void)
 {
@@ -163,23 +163,27 @@ MyApp::ScheduleTx (void)
       m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
     }
 }
-
+//count values for different events
 int countSent = 0;
 int countReceived = 0;
 int countDropped = 0;
-
+//Keeps a count of the number of Packets Dropped
 static void
 RxDrop (Ptr<const Packet> p)
 {
   countDropped  ++;
   //NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
 }
+
+//Keeps a count of the number of Packets Received by net device
 static void
 RxEnd (Ptr<const Packet> p)
 {
   countReceived ++;
  // NS_LOG_UNCOND ("Rx Received at " << Simulator::Now().GetSeconds());
 }
+
+//Keeps a count of the number of packets transmitted by device
 static void
 TxEnd (Ptr<const Packet> p)
 {
@@ -195,33 +199,33 @@ main (int argc, char *argv[])
 
 
 
-//for(int count = 5 ; count < 10 ; count++){  
+//Create Node container, the nodes, and the Helper with the appropreate values
 NodeContainer nodes;
   nodes.Create (2);
-
   OOKHelper OOK;
   OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
-//-----------------------------------------------------------------
+//Sets up the Net devices with the Helper
   NetDeviceContainer devices;
   devices = OOK.Install (nodes);
-
+//Creates two constant mobility model
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();  
-
+//Set the distance between them
   a -> SetPosition (Vector (0.0,0.0,0.0));
   b -> SetPosition (Vector (0.0,5.0,0.0));
+  //Creates a pointer to the AerrorModel
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
-
+  //Sets up a new Propagation Model with all of values set
   VLCPropagationLossModel VPLM;
   VPLM.SetTxPower(48.573);
   VPLM.SetLambertianOrder(70);
   VPLM.SetFilterGain(1);
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
-
+//Set all the values for the Error model and get the Received power from the Propagation model
   em2->setRes(0.28);
   em2->setNo(1.0e-11);
   em2->setRb(1.0e6);
@@ -229,32 +233,33 @@ NodeContainer nodes;
 
   
 
-  //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
-  //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
+  //Attachs the Error model to the net device
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
-
+ //Makes a new Internet Stack and installs it to the nodes
   InternetStackHelper stack;
   stack.Install (nodes);
-
+ // Makes a new Address helper and assign addresses to the devices
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.252");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
-
+  //Makes the Sink and installs it on the receiver
   uint16_t sinkPort = 8080;
   Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   sinkApps.Start (Seconds (0.));
   sinkApps.Stop (Seconds (20.));
-
+//Makes a new socket
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
 
-
+//Creates the App with the Socket, Sink, 1000 packets to send at 1040 bytes long at a data rate of 1Mbps
   Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20.));
+
+//Traces the PhyTx End(sent packets) , PHYRxEnd (Received packets), and PhyRxDrop (Dropped packets) from the net devices
 
     devices.Get (0) -> TraceConnectWithoutContext ("PhyTxEnd", MakeCallback(&TxEnd));
 
@@ -262,7 +267,7 @@ NodeContainer nodes;
 
   devices.Get(1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
 
-
+//Runs and destorys the simulation
   Simulator::Stop (Seconds (20));
   Simulator::Run ();
   Simulator::Destroy();
