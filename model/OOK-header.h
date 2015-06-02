@@ -6,7 +6,7 @@
 #include "ns3/header.h"
 
 namespace ns3 {
-
+//SEE P2P Header.h for documentation
 class OOKHeader : public Header {
 public:
 	OOKHeader();
