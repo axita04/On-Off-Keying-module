@@ -120,13 +120,13 @@ MyApp::ScheduleTx (void)
 
 //**************************************
 
-Ptr<PacketSink> sink1;
-std::vector<double> Received (1,0);
-std::vector<double> theTime (1,0);
+Ptr<PacketSink> sink1; //Put on Rx so as to get info on when packets are received
+std::vector<double> Received (1,0); //Keeps track on how much data is received
+std::vector<double> theTime (1,0); //Keeps track of on what time each packet is received
 static void
 RxEnd (Ptr<const Packet> p)
 {
-  if(Received.back() != sink1->GetTotalRx()){
+  if(Received.back() != sink1->GetTotalRx()){ //checks that no duplicate packets are counted as data
     Received.push_back(sink1->GetTotalRx());
     theTime.push_back(Simulator::Now().GetSeconds());
   }
@@ -141,7 +141,7 @@ main (int argc, char *argv[])
 {
 
 
-for(double d = 0.0 ; d < 10.0 ; d+=0.05){  
+for(double d = 0.0 ; d < 10.0 ; d+=0.05){  //loops the simulation for different distances
 NodeContainer nodes;
   nodes.Create (2);
 
@@ -156,31 +156,31 @@ NodeContainer nodes;
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();  
 
   a -> SetPosition (Vector (0.0,0.0,0.0));
-  b -> SetPosition (Vector (0.0,d,0.0));
+  b -> SetPosition (Vector (0.0,d,0.0)); //this node will move in the y direction 
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
 
-  VLCPropagationLossModel VPLM;
-  VPLM.SetTxPower(48.573);
-  VPLM.SetLambertianOrder(70);
-  VPLM.SetFilterGain(1);
-  VPLM.SetPhotoDetectorArea(1.0e-4);
-  VPLM.SetConcentratorGain(70,1.5);
+  VLCPropagationLossModel VPLM;       //*
+  VPLM.SetTxPower(48.573);            //*
+  VPLM.SetLambertianOrder(70);        //*        This block is responsible for setting up the variables in the propagation equation
+  VPLM.SetFilterGain(1);              //*
+  VPLM.SetPhotoDetectorArea(1.0e-4);  //*
+  VPLM.SetConcentratorGain(70,1.5);   //
 
-  em2->setRes(0.28);
-  em2->setNo(1.0e-11);
-  em2->setRb(1.0e6);
+  em2->setRes(0.28);             //*
+  em2->setNo(1.0e-11);           //* This block sets up the variables for the Error model
+  em2->setRb(1.0e6);             //*
   em2->setRx(VPLM.GetRxPower(a,b));
 
   
 
   //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
-  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2)); // layers on the error model
 
-  InternetStackHelper stack;
-  stack.Install (nodes);
+  InternetStackHelper stack; 
+  stack.Install (nodes); //installs the internet stack onto each node
 
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.252");
@@ -189,29 +189,29 @@ NodeContainer nodes;
   uint16_t sinkPort = 8080;
   Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
   PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
-  ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
+  ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1)); //on Rx Node
   
   //*****************************************
-   sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
+   sink1 = DynamicCast<PacketSink>(sinkApps.Get(0)); //puts sink on Rx Node
   
   sinkApps.Start (Seconds (0.));
-  sinkApps.Stop (Seconds (20000.));
+  sinkApps.Stop (Seconds (20000.)); //giving each simulation ample time to execute
 
-  Ptr<Socket> ns3UdpSocket = Socket::CreateSocket (nodes.Get (0), UdpSocketFactory::GetTypeId ());
+  Ptr<Socket> ns3UdpSocket = Socket::CreateSocket (nodes.Get (0), UdpSocketFactory::GetTypeId ()); //creating socket and putting it on the first node
 
 
   Ptr<MyApp> app = CreateObject<MyApp> ();
-  app->Setup (ns3UdpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
-  nodes.Get (0)->AddApplication (app);
+  app->Setup (ns3UdpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps")); //* sets up the application that sends 1000 packets each of size 1040bytes at 1Mbps
+  nodes.Get (0)->AddApplication (app); // installs on Tx Node
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20000.0));
 
-  devices.Get(1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
+  devices.Get(1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd)); //needed in order to know when each packet is sent
 
 
   Simulator::Stop (Seconds (20000.0));
   Simulator::Run ();
-  double goodput = (Received.back()*8)/ theTime.back();
+  double goodput = (Received.back()*8)/ theTime.back(); //the amount of data over the time it took to transmit that data or in this case throughput at the application layer
   std::cout << d << " " << goodput << std::endl;
   
 
