@@ -18,6 +18,11 @@
  * Author: James Basuino       <jb392@njit.edu>
  *                              
  */
+ 
+ /*Normal Header structure:
+   All parts of the equations that are constant have set and get functions
+   while the variables have only get functions as they are calculated and rely on the position of the nodes
+   */
 
 #ifndef VLC_PROPAGATION_LOSS_MODEL_H
 #define VLC_PROPAGATION_LOSS_MODEL_H
@@ -40,14 +45,14 @@ public:
   VLCPropagationLossModel ();
   void SetTxPower(double dBm);
   double GetTxPower();
-  void SetLambertianOrder(double semiangle);
+  void SetLambertianOrder(double semiangle); //Must be in degrees
   double GetLambertianOrder();
   void SetFilterGain(double gain);
   double GetFilterGain();
-  void SetConcentratorGain(double fov, double refracIndex);
+  void SetConcentratorGain(double fov, double refracIndex); //fov is an angle and must be in degrees
 //, Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   double GetConcentratorGain();
-  void SetPhotoDetectorArea(double area);
+  void SetPhotoDetectorArea(double area); // meters squared
   double GetPhotoDetectorArea();
   double GetDistance(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
