@@ -30,6 +30,8 @@
 #include "OOK-header.h"
 #include "error-rate-model.h"
 
+//NOT USED GOTO on-off-keying-net-device.cc
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OnOffKeyingNetDevice");
