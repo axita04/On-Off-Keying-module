@@ -98,7 +98,7 @@ VLCPropagationLossModel::GetTxPower ()
 void
 VLCPropagationLossModel::SetLambertianOrder (double semiangle)
 {
-  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180))));
+  m_LambertianOrder = ((-1) * (std::log(2))) / (std::log(std::cos(semiangle * (M_PI / 180)))); //the pi/180 is to make it into radians
 }
 
 double
@@ -164,18 +164,18 @@ return std::atan((x / y) * (M_PI / 180));
 double
 VLCPropagationLossModel::GetIncidenceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-return (GetRadianceAngle(a,b));
+return (GetRadianceAngle(a,b)); //as of now with no rotation of nodes Incidence angle is the same as Radiance angle, this code will most liekly change when rotation is introduced
 }
 
 double
 VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
 
-  return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));
+  return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
 }
 
 double
-VLCPropagationLossModel::GetRxPower(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
+VLCPropagationLossModel::GetRxPower(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const //is necessary to access the private function that calculates the received power
 {
   
   return DoCalcRxPower(m_TxPower, a, b);
