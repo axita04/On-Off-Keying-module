@@ -27,6 +27,9 @@
 #include "ns3/traced-callback.h"
 #include "on-off-keying-net-device.h"
 
+/*
+See Point to Point for Documentation
+*/
 namespace ns3 {
 
 class PointToPointNetDevice;
