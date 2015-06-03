@@ -29,6 +29,9 @@
 #include "on-off-keying-channel.h"
 #include "OOK-header.h"
 
+/*
+Seet P2P documentation
+*/
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OnOffKeyingNetDevice");
