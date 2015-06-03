@@ -16,11 +16,11 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
-
+//Creates a new Custom App
 class MyApp : public Application 
 {
 public:
-
+//Header of the new App Contains Constructor, Deconstructor, Setup, Start/Stop Application 
   MyApp ();
   virtual ~MyApp();
 
