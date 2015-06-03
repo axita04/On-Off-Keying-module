@@ -52,7 +52,7 @@ using namespace ns3;
 }*/
 
 static Gnuplot
-TestDeterministic (Ptr<VLCPropagationLossModel> model)
+TestDeterministic (Ptr<VLCPropagationLossModel> model) //this function is used to get and print valuable data that will be graphed visually in different program such as GnuPlot or MatLab
 {
   Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
@@ -75,7 +75,9 @@ TestDeterministic (Ptr<VLCPropagationLossModel> model)
     for (double distance = 0.0; distance < 5.0; distance += 0.05)
       {
         b->SetPosition (Vector (0.0, distance, 0.0));
-        /*std::cout << "-------------------------------------" << std::endl;
+        /*This is staying here for debugging purposes so one can analyze if the numbers make sense
+        
+        std::cout << "-------------------------------------" << std::endl;
         std::cout << "RxPower: " << model->GetRxPower(a,b) << std::endl;
         std::cout << "TxPower: " << model->GetTxPower() << std::endl;
         std::cout << "LambertianOrder: " << model->GetLambertianOrder() << std::endl;
@@ -105,6 +107,8 @@ TestDeterministic (Ptr<VLCPropagationLossModel> model)
 
   return plot;
 }
+
+//The following are commented out because a use has not been identified for them yet but may be what is needed in the future
 
 /*static Gnuplot
 TestProbabilistic (Ptr<PropagationLossModel> model, unsigned int samples = 100000)
@@ -231,12 +235,12 @@ int main (int argc, char *argv[])
 
   {
     Ptr<VLCPropagationLossModel> vlc =
-CreateObject<VLCPropagationLossModel> ();
-    vlc->SetTxPower(48.573);
-    vlc->SetLambertianOrder(70);
-    vlc->SetFilterGain(1);
-    vlc->SetConcentratorGain(70,1.5);
-    vlc->SetPhotoDetectorArea(.0001);
+CreateObject<VLCPropagationLossModel> (); //*
+    vlc->SetTxPower(48.573);              //*
+    vlc->SetLambertianOrder(70);          //* Sets up all that is need for the received power to be calculated
+    vlc->SetFilterGain(1);                //*
+    vlc->SetConcentratorGain(70,1.5);     //*
+    vlc->SetPhotoDetectorArea(.0001);     //*
     Gnuplot plot = TestDeterministic (vlc);
     plot.SetTitle("ns3::VLCPropagationLossModel");
     gnuplots.AddPlot (plot);
