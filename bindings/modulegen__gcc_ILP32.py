@@ -1,3 +1,5 @@
+#The bindings are currently not working and therefore have been disabled for build, this does not hinder the module but should be fixed for added functionality
+
 from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandlers
 
 
