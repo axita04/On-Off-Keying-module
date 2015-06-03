@@ -28,7 +28,9 @@
 #include "ns3/mpi-interface.h"
 
 namespace ns3 {
-
+  /*
+  See P2P documentation
+  */
 NS_LOG_COMPONENT_DEFINE ("OOKRemoteChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (OOKRemoteChannel);
