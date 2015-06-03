@@ -16,7 +16,9 @@
 #include "ns3/on-off-keying-remote-channel.h"
 
 namespace ns3 {
-
+/*
+*See P2P for documentation
+*/
 NS_LOG_COMPONENT_DEFINE("OOKHelper");
 
 OOKHelper::OOKHelper()
