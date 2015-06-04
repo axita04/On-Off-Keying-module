@@ -68,7 +68,7 @@ public:
 
   MyApp ();
   virtual ~MyApp();
-
+  const TcpHeader temp_header;
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
 private:
@@ -146,7 +146,7 @@ MyApp::SendPacket (void)
 {
   Ptr<Packet> packet = Create<Packet> (m_packetSize);
   m_socket->Send (packet);
-
+  packet->AddHeader(temp_header);
   if (++m_packetsSent < m_nPackets)
     {
       ScheduleTx ();
