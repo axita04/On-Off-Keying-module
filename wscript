@@ -15,6 +15,7 @@ def build(bld):
         'model/on-off-keying-net-device.cc',
         'model/on-off-keying-remote-channel.cc',
         'model/OOK-header.cc',
+        'model/VLC-Mobility-Model.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('on-off-keying-module')
@@ -31,6 +32,7 @@ def build(bld):
         'model/on-off-keying-channel.h',
         'model/on-off-keying-remote-channel.h',
         'model/OOK-header.h',
+        'model/VLC-Mobility-Model.h"
         ]
 
     if bld.env.ENABLE_EXAMPLES:
