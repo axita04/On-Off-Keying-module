@@ -45,6 +45,8 @@ public:
 
   double getRadianceAngle(Ptr<VlcMobilityModel> a, Ptr<VlcMobilityModel> b) const;
 
+  double getIncidenceAngle(Ptr<VlcMobilityModel> a, Ptr<VlcMobilityModel> b) const;
+
   static double getPower(void);
 
   static double getEfficacy(void);
