@@ -1,3 +1,4 @@
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007,2008, 2009 INRIA, UDcast
@@ -26,7 +27,7 @@
 
 #ifndef VLC_PROPAGATION_LOSS_MODEL_H
 #define VLC_PROPAGATION_LOSS_MODEL_H
-
+#include <vector>
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
 
@@ -58,6 +59,9 @@ public:
   double GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetIncidenceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetRxPower(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
+  double dotProduct(std::vector<double> v1, std::vector<double> v2) const; 
+  double magnitude(std::vector<double> v) const; 
+
 
 private:
 /**
@@ -88,3 +92,6 @@ private:
 }
 
 #endif /* VLCPROPAGATIONMODEL*/
+
+
+
