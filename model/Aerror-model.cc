@@ -80,8 +80,10 @@ void AErrorModel::DoReset(void){
 }
 //Calculates BER from SNR
 double AErrorModel::calculateBER (){
-//SNR calculation	
+//SNR calculation
+//std::cout << "RX : " << Rx << std::endl;
 SNR = (std::pow((Rx*Res),2)/No);
+//std::cout <<SNR << " : SNR" <<std::endl;
 double BER;
 if(SNR > 0){
 //BER calculation
