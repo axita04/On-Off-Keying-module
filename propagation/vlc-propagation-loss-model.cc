@@ -1,3 +1,4 @@
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007,2008, 2009 INRIA, UDcast
@@ -25,7 +26,9 @@
 #include "ns3/double.h"
 #include "ns3/pointer.h"
 #include <cmath>
+#include <vector>
 #include "vlc-propagation-loss-model.h"
+#include "ns3/VLC-Mobility-Model.h"
 
 namespace ns3 {
 
@@ -153,25 +156,71 @@ VLCPropagationLossModel::GetDistance(Ptr<MobilityModel> a, Ptr<MobilityModel> b)
 return std::sqrt((std::pow((b->GetPosition().x - a->GetPosition().x),2)) + (std::pow((b->GetPosition().y - a->GetPosition().y),2)) + (std::pow((b->GetPosition().z - a->GetPosition().z),2)));
 }
 
+//---------------------------------------------------
+double VLCPropagationLossModel::dotProduct(std::vector<double> v1, std::vector<double> v2) const
+{
+
+return ((v1.at(0) * v2.at(0)) + (v1.at(1) * v2.at(1)) + (v1.at(2) * v2.at(2)));
+}
+double VLCPropagationLossModel::magnitude(std::vector<double> v) const
+{
+ // std::cout << "MORE STUFF : " << std::sqrt(std::pow(v.at(0),2) + std::pow(v.at(1),2) + std::pow(v.at(2),2)) << std::endl;   
+  
+  return std::sqrt(std::pow(v.at(0),2) + std::pow(v.at(1),2) + std::pow(v.at(2),2));
+}
+
+//----------------------------------------------------
 double
 VLCPropagationLossModel::GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-double x = std::abs(a->GetPosition().x - b->GetPosition().x);
-double y = std::abs(a->GetPosition().y - b->GetPosition().y);
-return std::atan((x / y) * (M_PI / 180));
+Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
+Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
+
+std::vector<double> v1,v2;
+
+v1.push_back((a->GetPosition().x - b->GetPosition().x));
+v1.push_back((a->GetPosition().y - b->GetPosition().y));
+v1.push_back((a->GetPosition().z - b->GetPosition().z));
+
+v2.push_back(std::sin(x->GetElevation()) * std::cos(x->GetAzimuth()));
+v2.push_back(std::sin(x->GetElevation()) * std::sin(x->GetAzimuth()));
+v2.push_back(std::cos(x->GetElevation()));
+std::cout << "v1 0 : " << v1.at(0) << " v1 : 1 " << v1.at(1) << " v1 : 2 " << v1.at(2) << std::endl; 
+std::cout << "v2 0 : " << v2.at(0) << " v2 : 1 " << v2.at(1) << " v2 : 2 " << v2.at(2) << std::endl;
+//std::cout<< "Stuff : " << (dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2))) << std::endl;
+double angle = std::acos((dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2))));
+std::cout << "RAD ANGLE: " << angle << std::endl;
+return (angle);
 }
 
 double
 VLCPropagationLossModel::GetIncidenceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-return (GetRadianceAngle(a,b)); //as of now with no rotation of nodes Incidence angle is the same as Radiance angle, this code will most liekly change when rotation is introduced
+Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
+Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
+
+std::vector<double> v1,v2;
+
+v1.push_back((a->GetPosition().x - b->GetPosition().x)*-1);
+v1.push_back((a->GetPosition().y - b->GetPosition().y)*-1);
+v1.push_back((a->GetPosition().z - b->GetPosition().z)*-1);
+
+v2.push_back(std::sin(y->GetElevation()) * std::cos(y->GetAzimuth()));
+v2.push_back(std::sin(y->GetElevation()) * std::sin(y->GetAzimuth()));
+v2.push_back(std::cos(y->GetElevation()));
+
+double angle = std::acos(dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2) ));
+//std::cout << "INC ANGLE : " << angle << std::endl;
+return (angle);
 }
 
 double
 VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-
-  return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
+Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
+Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
+  
+return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
 }
 
 double
@@ -188,3 +237,4 @@ VLCPropagationLossModel::DoAssignStreams (int64_t stream)
 }
 
 }/*ns3 namespace*/
+
