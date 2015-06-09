@@ -108,9 +108,9 @@ double Illumination::getRadianceAngle(Ptr<VlcMobilityModel> a, Ptr<VlcMobilityMo
 vector vec1, vec2;
 
 //rectangular coordinates
-vec1.i = std::abs(a->GetPosition().x - b->GetPosition().x);
-vec1.j = std::abs(a->GetPosition().y - b->GetPosition().y);
-vec1.k = std::abs(a->GetPosition().z - b->GetPosition().z);
+vec1.i = (std::abs(a->GetPosition().x - b->GetPosition().x))*-1;
+vec1.j = (std::abs(a->GetPosition().y - b->GetPosition().y))*-1;
+vec1.k = (std::abs(a->GetPosition().z - b->GetPosition().z))*-1;
 
 //spherical coordinates with r = 1 conversion to rectangular coordinates
 vec2.i = (std::sin(a->GetElevation())) * (std::cos(a->GetAzimuth()));
@@ -120,10 +120,27 @@ vec2.k = (std::cos(a->GetElevation()));
 return std::acos(dotProduct(vec1, vec2) / magnitude(vec1) * magnitude(vec2));
 }
 
+double Illumination::getIncidenceAngle(Ptr<VlcMobilityModel> a, Ptr<VlcMobilityModel> b) const
+{
+vector vec1, vec2;
+
+//rectangular coordinates
+vec1.i = (std::abs(a->GetPosition().x - b->GetPosition().x));
+vec1.j = (std::abs(a->GetPosition().y - b->GetPosition().y));
+vec1.k = (std::abs(a->GetPosition().z - b->GetPosition().z));
+
+//spherical coordinates with r = 1 conversion to rectangular coordinates
+vec2.i = (std::sin(b->GetElevation())) * (std::cos(b->GetAzimuth()));
+vec2.j = (std::sin(b->GetElevation())) * (std::sin(b->GetAzimuth()));
+vec2.k = (std::cos(b->GetElevation()));
+
+return std::acos(dotProduct(vec1, vec2) / magnitude(vec1) * magnitude(vec2));
+}
+
 double Illumination::calculateIlluminance(Ptr<VlcMobilityModel> a, Ptr<VlcMobilityModel> b){
   double distance = std::sqrt((std::pow((b->GetPosition().x - a->GetPosition().x),2)) + (std::pow((b->GetPosition().y - a->GetPosition().y),2)) + (std::pow((b->GetPosition().z - a->GetPosition().z),2)));
 
-  illuminance = Power*(LambertianOrder+1) * (std::pow(std::cos(getRadianceAngle(a,b)),LambertianOrder)) * getEfficacy()/ (2*M_PI*(std::pow(distance, 2)));  
+  illuminance = Power*(LambertianOrder+1) * (std::pow(std::cos(getRadianceAngle(a,b)),LambertianOrder)) * (std::cos(getIncidenceAngle(a,b))) * getEfficacy()/ (2*M_PI*(std::pow(distance, 2)));  
 
   return illuminance;
 }
