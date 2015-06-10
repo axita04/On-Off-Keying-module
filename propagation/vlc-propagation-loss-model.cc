@@ -185,11 +185,11 @@ v1.push_back((a->GetPosition().z - b->GetPosition().z));
 v2.push_back(std::sin(x->GetElevation()) * std::cos(x->GetAzimuth()));
 v2.push_back(std::sin(x->GetElevation()) * std::sin(x->GetAzimuth()));
 v2.push_back(std::cos(x->GetElevation()));
-std::cout << "v1 0 : " << v1.at(0) << " v1 : 1 " << v1.at(1) << " v1 : 2 " << v1.at(2) << std::endl; 
-std::cout << "v2 0 : " << v2.at(0) << " v2 : 1 " << v2.at(1) << " v2 : 2 " << v2.at(2) << std::endl;
+//std::cout << "v1 0 : " << v1.at(0) << " v1 : 1 " << v1.at(1) << " v1 : 2 " << v1.at(2) << std::endl; 
+//std::cout << "v2 0 : " << v2.at(0) << " v2 : 1 " << v2.at(1) << " v2 : 2 " << v2.at(2) << std::endl;
 //std::cout<< "Stuff : " << (dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2))) << std::endl;
 double angle = std::acos((dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2))));
-std::cout << "RAD ANGLE: " << angle << std::endl;
+//std::cout << "RAD ANGLE: " << angle << std::endl;
 return (angle);
 }
 
