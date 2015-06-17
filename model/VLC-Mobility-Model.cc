@@ -16,7 +16,13 @@
  * Author: Gustavo Carneiro  <gjc@inescporto.pt>
  */
 #include "VLC-Mobility-Model.h"
+#include "ns3/enum.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
+#include "ns3/log.h"
+#include <cmath>
 
 namespace ns3 {
 
@@ -27,7 +33,22 @@ TypeId VlcMobilityModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::VlcMobilityModel")
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
-    .AddConstructor<VlcMobilityModel> ();
+    .AddConstructor<VlcMobilityModel> ()
+    .AddAttribute("Azimuth",
+                 "The Left and right rotation of the device",              
+                DoubleValue(1.0),
+                MakeDoubleAccessor (&VlcMobilityModel::m_azimuth),
+                MakeDoubleChecker<double> ())
+     .AddAttribute("Elevation",
+                 "Up and Down rotation of the device",              
+                DoubleValue(1.0),
+                MakeDoubleAccessor (&VlcMobilityModel::m_elevation),
+                MakeDoubleChecker<double> ())
+     .AddAttribute("Position2",
+                 "Where the Device is",              
+                VectorValue(Vector(0.0,0.0,0.0)),
+                MakeVectorAccessor (&VlcMobilityModel::m_basePosition),
+                MakeVectorChecker());
   return tid;
 }
 
@@ -80,12 +101,12 @@ VlcMobilityModel::SetVelocityAndAcceleration (const Vector &velocity,
 
 void VlcMobilityModel::SetAzimuth(double angle)
 {
-  m_azimuth = angle;
+  m_azimuth = angle * (M_PI/180);
 }
 
 void VlcMobilityModel::SetElevation(double angle)
 {
-  m_elevation = angle;
+  m_elevation = angle * (M_PI/180);
 }
 
 double VlcMobilityModel::GetAzimuth(void)
