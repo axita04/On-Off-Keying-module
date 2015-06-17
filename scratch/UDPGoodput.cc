@@ -169,7 +169,7 @@ NodeContainer nodes;
   b ->SetAzimuth(0.0);
   a ->SetElevation(0.0);
   b ->SetElevation(0.0);
-  
+  /*  //Still needs to be better implemented
   MobilityHelper mobility;
   mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) , "Elevation" , DoubleValue(0.0) , "Position2" , VectorValue(Vector(0.0,0.0,5.0)));
 
@@ -183,7 +183,7 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   Ptr<Object> object = nodes.Get(0);
   Ptr<MobilityModel> model = object->GetObject<MobilityModel>();
   std::cout << model->GetPosition() << std::endl;
-
+*/
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
