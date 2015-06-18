@@ -51,11 +51,11 @@ TypeId VlcMobilityModel::GetTypeId (void)
                 MakeVectorChecker());
   return tid;
 }
-
+//constructor
 VlcMobilityModel::VlcMobilityModel ()
 {
 }
-
+Deconstuctor
 VlcMobilityModel::~VlcMobilityModel ()
 {
 }
@@ -66,7 +66,7 @@ VlcMobilityModel::DoGetVelocity (void) const
   double t = (Simulator::Now () - m_baseTime).GetSeconds ();
   return Vector (m_baseVelocity.x + m_acceleration.x*t,
                  m_baseVelocity.y + m_acceleration.y*t,
-                 m_baseVelocity.z + m_acceleration.z*t);
+                 m_baseVelocity.z + m_acceleration.z*t); // returns a velocity vector of the node that has this mobility model instlled on it
 }
 
 inline Vector
@@ -76,11 +76,11 @@ VlcMobilityModel::DoGetPosition (void) const
   double half_t_square = t*t*0.5;
   return Vector (m_basePosition.x + m_baseVelocity.x*t + m_acceleration.x*half_t_square,
                  m_basePosition.y + m_baseVelocity.y*t + m_acceleration.y*half_t_square,
-                 m_basePosition.z + m_baseVelocity.z*t + m_acceleration.z*half_t_square);
+                 m_basePosition.z + m_baseVelocity.z*t + m_acceleration.z*half_t_square); // returns a acceleration vector of the node that has this mobility model instlled on it
 }
 
 void 
-VlcMobilityModel::DoSetPosition (const Vector &position)
+VlcMobilityModel::DoSetPosition (const Vector &position) //called to set position via vector parameters
 {
   m_baseVelocity = DoGetVelocity ();
   m_baseTime = Simulator::Now ();
@@ -90,7 +90,7 @@ VlcMobilityModel::DoSetPosition (const Vector &position)
 
 void 
 VlcMobilityModel::SetVelocityAndAcceleration (const Vector &velocity,
-                                                               const Vector &acceleration)
+                                                               const Vector &acceleration) // called to set velocity and acceleration via vector parameters
 {
   m_basePosition = DoGetPosition ();
   m_baseTime = Simulator::Now ();
