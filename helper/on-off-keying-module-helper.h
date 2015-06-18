@@ -8,11 +8,9 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
-
+#include "ns3/on-off-keying-channel.h"
 #include "ns3/trace-helper.h"
-/*
-See P2P for Documentation
-*/
+
 namespace ns3 {
 
 class Queue;
@@ -26,7 +24,7 @@ class OOKHelper : public PcapHelperForDevice,
 public:
 	OOKHelper();
 	virtual ~OOKHelper(){}
-
+        Ptr<OOKChannel> channel;
 
 	void SetQueue(std::string type, std::string n1= "", const AttributeValue &v1 = EmptyAttributeValue(),
 					std::string n2 = "" ,const AttributeValue &v2 = EmptyAttributeValue(),
@@ -47,6 +45,7 @@ public:
 
 	NetDeviceContainer Install(std::string aname, std::string bname);
 
+        
 private:
 	virtual void EnablePcapInternal(std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilname);
 
@@ -56,6 +55,8 @@ private:
 	ObjectFactory m_channelFactory;
 	ObjectFactory m_remoteChannelFactory;
 	ObjectFactory m_deviceFactory;
+        
+
 };
 
 }
