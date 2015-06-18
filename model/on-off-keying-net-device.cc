@@ -1,3 +1,4 @@
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007, 2008 University of Washington
@@ -28,10 +29,11 @@
 #include "on-off-keying-net-device.h"
 #include "on-off-keying-channel.h"
 #include "OOK-header.h"
-
-/*
-Seet P2P documentation
-*/
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+#include <cmath>
+#define _USE_MATH_DEFINES
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OnOffKeyingNetDevice");
@@ -331,15 +333,90 @@ OnOffKeyingNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
 }
+/*
+void OnOffKeyingNetDevice::setDistance(double d)
+{
+distance = d;
+}
+void OnOffKeyingNetDevice::setNo(double x)
+{
+No =x;
+}
+void OnOffKeyingNetDevice::setPhi(double y)
+{
+phi = y;
+}
+void OnOffKeyingNetDevice::setPheta(double z)
+{
+pheta =z;
+}
+void OnOffKeyingNetDevice::setPt(double p)
+{
+Pt = p;
+}
+void OnOffKeyingNetDevice::setA(double a)
+{
+A =a;
+}
+void OnOffKeyingNetDevice::setn(double b)
+{
+n = b;
+}
+void OnOffKeyingNetDevice::setFov(double f)
+{
+FOV =f;
+}
 
+double OnOffKeyingNetDevice::CalculateBER()
+{
+
+double ml = std::log(2)/ std::log(std::cos(0.5 * pheta));
+
+double gPhi;
+if( phi > 0 && phi < FOV)
+{
+gPhi = (n*n)/(std::sin(FOV));
+}else{
+gPhi = 0;
+}
+
+double Ts = 0 ;
+Ts = Ts;
+
+double Eb = Pt * (((ml +1)*A)/(2 *M_PI * (distance*distance))) * (std::cos(phi)) * gPhi * (std::pow(std::cos(pheta),ml)) * Ts;
+
+double BER = 0.5*erfc(std::sqrt(Eb/No));
+return BER;
+}
+*/
+/*
+bool
+OnOffKeyingNetDevice::DoCorruptBit (Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this << p);
+  //std::cout << BER << std::endl;
+  double per = 1.0 - (double)std::pow ((double)(1.0 - BER), static_cast<double> (8 * p->GetSize ()) );
+  //std::cout<<per<<std::endl;
+  double rnd = (double)rand()/(double)(RAND_MAX);
+  //std::cout<<rnd<< " random num" << std::endl;
+  return (rnd < per);
+}
+*/
+ 
 void
 OnOffKeyingNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
   uint16_t protocol = 0;
 
-  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
+  
+  //double BER = CalculateBER();    
+ // std::cout << BER << std::endl;
+ 
+
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt(packet))
     {
+      //std::cout<< " Dropped "<<std::endl;
       // 
       // If we have an error model and it indicates that it is time to lose a
       // corrupted packet, don't forward this packet up, let it go.
@@ -675,3 +752,6 @@ OnOffKeyingNetDevice::EtherToOok (uint16_t proto)
 
 
 } // namespace ns3
+
+   
+
