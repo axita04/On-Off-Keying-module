@@ -51,6 +51,7 @@ public:
   void SetFilterGain(double gain);
   double GetFilterGain();
   void SetConcentratorGain(double fov, double refracIndex); //fov is an angle and must be in degrees
+//, Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   double GetConcentratorGain();
   void SetPhotoDetectorArea(double area); // meters squared
   double GetPhotoDetectorArea();
@@ -58,8 +59,8 @@ public:
   double GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetIncidenceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetRxPower(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
-  double dotProduct(std::vector<double> v1, std::vector<double> v2) const;  //Helper for calculations
-  double magnitude(std::vector<double> v) const; //Helper for caculations
+  double dotProduct(std::vector<double> v1, std::vector<double> v2) const; 
+  double magnitude(std::vector<double> v) const; 
 
 
 private:
