@@ -19,7 +19,7 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
-
+//Implementation of the application that will be ran on the nodes
 class MyApp : public Application 
 {
 public:
@@ -122,10 +122,10 @@ MyApp::ScheduleTx (void)
 }
 
 //**************************************
-
+//Packet sink responsible for being able to trace the packets received at a node
 Ptr<PacketSink> sink1;
-std::vector<double> Received (1,0);
-std::vector<double> theTime (1,0);
+std::vector<double> Received (1,0);//Keeps track of how many total bytes are received after the next packet is received
+std::vector<double> theTime (1,0);//Keeps track of what times each packet is received in the simulator
 static void
 RxEnd (Ptr<const Packet> p)
 {
@@ -143,25 +143,25 @@ int
 main (int argc, char *argv[])
 {
 
-Gnuplot plot;
+Gnuplot plot; //used for data extracting purposes
 
 Gnuplot2dDataset dataSet;
 dataSet.SetStyle(Gnuplot2dDataset::LINES);
 
 
-  for(double pks = 0.0 ; pks < 20000 ; pks+=1000){
-NodeContainer nodes;
+  for(double pks = 0.0 ; pks < 20000 ; pks+=1000){ // runs the code multiple time with different packet sizes
+NodeContainer nodes; // A node container is an object that stores individual nodes and helps us access them
   nodes.Create (2);
 
-  OOKHelper OOK;
+  OOKHelper OOK; // This helper makes the VLC channel that we are going to use
   OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
 //-----------------------------------------------------------------
-  NetDeviceContainer devices;
+  NetDeviceContainer devices;// same as a node container just for net devices instead
   devices = OOK.Install (nodes);
 
-  Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();
-  Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();  
+  Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();//These vectors are what represent the nodes moving
+  Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();//in space
 
   a -> SetPosition (Vector (0.0,0.0,5.0));
   b -> SetPosition (Vector (1.0,0.0,0.0));
@@ -184,10 +184,11 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   Ptr<MobilityModel> model = object->GetObject<MobilityModel>();
   std::cout << model->GetPosition() << std::endl;
 */
-  AErrorModel *em2 ;
-  AErrorModel x;
-  em2 = &x;
+  AErrorModel *em2 ;///
+  AErrorModel x;    //All this does is just instantiate an Error Model that we later install on the netdevice
+  em2 = &x;         //
 
+  //Sets the initial conditions of the transmitter and receiver in the VLC network
   VLCPropagationLossModel VPLM;
   VPLM.SetTxPower(48.573);
   VPLM.SetLambertianOrder(70);
@@ -195,6 +196,7 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
 
+  //Also initial conditions, but these are made in the error model since thats where the values are used to calculate BER
   em2->setRes(0.28);
   em2->setNo(1.0e-11);
   em2->setRb(1.0e6);
@@ -204,8 +206,9 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
 
   //Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ();
   //em->SetAttribute("ErrorRate", DoubleValue(0.00001));
-  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2)); // putting the error model on the netdevice
 
+   //The following code is similar because the same error model is put on the other netdevice inorder to move the channel more towards a duplex VLC link
    AErrorModel *em3 ;
   AErrorModel y;
   em3 = &y;
@@ -224,48 +227,49 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
 
   devices.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em3));
 
-  InternetStackHelper stack;
+  InternetStackHelper stack; //This helper handles making all the components of the internet stack that will be layered on top on the already exsisting network
   stack.Install (nodes);
 
-  Ipv4AddressHelper address;
+  Ipv4AddressHelper address; // Helps with assigning the correct addresses for each node
   address.SetBase ("10.1.1.0", "255.255.255.252");
   Ipv4InterfaceContainer interfaces = address.Assign (devices);
 
   uint16_t sinkPort = 8080;
-  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort));
-  PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+  Address sinkAddress (InetSocketAddress (interfaces.GetAddress (1), sinkPort)); // Assigns a sink to a node using its interface address at the sinkPort
+  PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort)); //makes it a udp sink
   ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
   
   //*****************************************
-   sink1 = DynamicCast<PacketSink>(sinkApps.Get(0));
+   sink1 = DynamicCast<PacketSink>(sinkApps.Get(0)); //making the packet sink so packet events can be traced
   
   sinkApps.Start (Seconds (0.));
   sinkApps.Stop (Seconds (20000.));
 
   Ptr<Socket> ns3UdpSocket = Socket::CreateSocket (nodes.Get (0), UdpSocketFactory::GetTypeId ());
 
-
+  //Creating the app to be installed on the nodes
   Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3UdpSocket, sinkAddress, pks, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20000.0));
 
+  //This is an example of a trace source that will allow us to see when something happens, in this case, when a packet is received on the reciver side
   devices.Get(1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
 
 
   Simulator::Stop (Seconds (20000.0));
   Simulator::Run ();
-  double goodput = (Received.back()*8)/ theTime.back();
+  double goodput = (Received.back()*8)/ theTime.back(); //goodput calculation
   //std::cout<< " Elevation : " << el << " BER : " << em2->getBER() << std::endl;
   
-  dataSet.Add(pks, goodput);
+  dataSet.Add(pks, goodput); //adds these parameters to a data set that will be used for future graphs 
 
   Simulator::Destroy();
   }
 
 
-
+//More data formatting stuff
 std::ostringstream os;
 os << "txPower" << 48.573 <<"dbm";
 dataSet.SetTitle(os.str());
