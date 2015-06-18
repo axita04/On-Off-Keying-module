@@ -31,6 +31,7 @@
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 
+
 namespace ns3 {
 
 class Queue;
@@ -130,6 +131,9 @@ public:
    */
   void SetReceiveErrorModel (Ptr<ErrorModel> em);
 
+  //double CalculateBER(void);
+        
+  //bool DoCorruptBit (Ptr<Packet> p, double BER);
   /**
    * Receive a packet from a connected OOKChannel.
    *
@@ -141,6 +145,7 @@ public:
    * \param p Ptr to the received packet.
    */
   void Receive (Ptr<Packet> p);
+
 
   // The remaining methods are documented in ns3::NetDevice*
 
@@ -221,6 +226,8 @@ private:
    * \brief Dispose of the object
    */
   virtual void DoDispose (void);
+
+  
 
 private:
 
@@ -468,6 +475,16 @@ private:
    * \return The corresponding OOK protocol number
    */
   static uint16_t EtherToOok (uint16_t protocol);
+
+        
+  double distance; //Distance between Tx and Rx
+  double No;       //Floor Noise
+  double phi;     
+  double pheta;
+  double Pt;       //Power Transmitted
+  double A;
+  double n;
+  double FOV;      // Feild of View
 };
 
 } // namespace ns3
