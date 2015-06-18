@@ -25,9 +25,7 @@
 #include "on-off-keying-net-device.h"
 
 namespace ns3 {
-/*************
- * Same as P2P channel -see p2p channel for documentation
- * /
+
 NS_LOG_COMPONENT_DEFINE ("OOKChannel");
 
 NS_OBJECT_ENSURE_REGISTERED (OOKChannel);
