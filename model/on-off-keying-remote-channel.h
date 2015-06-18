@@ -26,9 +26,8 @@
 #include "on-off-keying-channel.h"
 
 namespace ns3 {
-/*
-See P2P documentation
-*/
+
+
 class OOKRemoteChannel : public OOKChannel
 {
 public:
