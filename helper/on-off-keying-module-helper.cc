@@ -6,6 +6,7 @@
 #include "ns3/simulator.h"
 #include "ns3/on-off-keying-net-device.h"
 #include "ns3/on-off-keying-channel.h"
+#include "ns3/error-rate-model.h"
 #include "ns3/queue.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
@@ -16,9 +17,7 @@
 #include "ns3/on-off-keying-remote-channel.h"
 
 namespace ns3 {
-/*
-*See P2P for documentation
-*/
+
 NS_LOG_COMPONENT_DEFINE("OOKHelper");
 
 OOKHelper::OOKHelper()
@@ -29,6 +28,9 @@ m_channelFactory.SetTypeId("ns3::OOKChannel");
 m_remoteChannelFactory.SetTypeId("ns3::OOKRemoteChannel");
 
 }
+
+
+
 
 void
 OOKHelper::SetQueue (std::string type,
@@ -163,7 +165,7 @@ OOKHelper::Install(Ptr<Node> a, Ptr<Node> b){
 	devB->SetQueue(queueB);
 
 	bool useNormalChannel = true;
-	Ptr<OOKChannel> channel = 0;
+	channel = 0;
 
 	if(MpiInterface::IsEnabled()){
 		uint32_t n1SystemId = a->GetSystemId();
