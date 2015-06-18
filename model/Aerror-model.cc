@@ -91,7 +91,7 @@ BER = 0.5*erfc(std::sqrt(SNR/2));
 }else{
 BER = 1;
 }
-BER = 0.00003;
+
 return BER;
 }
 //Set Noise power
