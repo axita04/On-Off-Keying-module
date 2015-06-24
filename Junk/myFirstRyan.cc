@@ -50,31 +50,31 @@ Ipv4InterfaceContainer iSrc = ipv4.Assign(dSrc);
 ipv4.SetBase("10.1.2.0", "255.255.255.0");
 Ipv4InterfaceContainer iDst = ipv4.Assign(dDst);
 
-Ptr<Ipv4> ipv4Src = Src->GetObject<Ipv4> ();
-Ptr<Ipv4> ipv4Dst = Dst->GetObject<Ipv4> ();
-Ptr<Ipv4> ipv4Relay = Relay->GetObject<Ipv4> ();
 
+Ptr<Ipv4> ipv4Src = Src->GetObject<Ipv4>();
+Ptr<Ipv4> ipv4Relay = Relay->GetObject<Ipv4>();
+Ptr<Ipv4> ipv4Dst = Dst->GetObject<Ipv4>();
 
 Ipv4StaticRoutingHelper ipv4RoutingHelper;
 Ptr<Ipv4StaticRouting> staticRoutingSrc = ipv4RoutingHelper.GetStaticRouting(ipv4Src);
-Ptr<Ipv4StaticRouting> staticRoutingDst = ipv4RoutingHelper.GetStaticRouting(ipv4Dst);
 Ptr<Ipv4StaticRouting> staticRoutingRelay = ipv4RoutingHelper.GetStaticRouting(ipv4Relay);
+Ptr<Ipv4StaticRouting> staticRoutingDst = ipv4RoutingHelper.GetStaticRouting(ipv4Dst);
 
-staticRoutingRelay->AddHostRouteTo(Ipv4Address ("10.1.2.1"), Ipv4Address("10.1.2.1"), 1);
-staticRoutingRelay->AddHostRouteTo(Ipv4Address ("10.1.1.1"), Ipv4Address("10.1.1.1"), 1);
-staticRoutingSrc->AddHostRouteTo(Ipv4Address("10.1.2.1") , Ipv4Address("10.1.1.2"),2);
-staticRoutingDst->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.2.2"),2);
+staticRoutingSrc->AddHostRouteTo(Ipv4Address("10.1.2.1"), Ipv4Address("10.1.1.2"), 1,2);
+staticRoutingRelay->AddHostRouteTo(Ipv4Address("10.1.2.1"), Ipv4Address("10.1.2.1"), 1,1);
+staticRoutingDst->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.2.2"), 1,2);
+staticRoutingRelay->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
 
 Ptr<Socket> srcSocket = Socket::CreateSocket(Src,TypeId::LookupByName("ns3::UdpSocketFactory"));
 srcSocket->Bind();
-srcSocket->SetRecvCallback(MakeCallback (&srcSocketRecv));
+srcSocket->SetRecvCallback (MakeCallback(&srcSocketRecv));
 
 Ptr<Socket> dstSocket = Socket::CreateSocket(Dst, TypeId::LookupByName("ns3::UdpSocketFactory"));
 uint16_t dstport = 12345;
 Ipv4Address dstaddr ("10.1.2.1");
-InetSocketAddress dstAds = InetSocketAddress(dstaddr, dstport);
-dstSocket->Bind(dstAds);
-dstSocket->SetRecvCallback(MakeCallback (&dstSocketRecv));
+InetSocketAddress dstsa = InetSocketAddress(dstaddr, dstport);
+dstSocket->Bind(dstsa);
+dstSocket->SetRecvCallback(MakeCallback(&dstSocketRecv));
 
 AsciiTraceHelper ascii;
 p2p.EnableAsciiAll(ascii.CreateFileStream ("RoutingEx2.tr"));
@@ -95,6 +95,7 @@ return 0;
 
 void SendStuff (Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port)
    {
+     std::cout<<"SEND"<<std::endl;
      Ptr<Packet> p = Create<Packet> ();
      p->AddPaddingAtEnd (100);
      sock->SendTo (p, 0, InetSocketAddress (dstaddr,port));
