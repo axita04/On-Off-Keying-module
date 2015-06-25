@@ -1,3 +1,14 @@
+/*
+		p2p
+	WifiAp ------ relayAp
+		       ^   |
+		       |   |
+		  wifi |   | VLC
+		       |   v
+	WifiMt ------ relayMt
+		p2p
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
