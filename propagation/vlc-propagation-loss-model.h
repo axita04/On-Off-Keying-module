@@ -30,6 +30,8 @@
 #include <vector>
 #include "ns3/nstime.h"
 #include "ns3/propagation-loss-model.h"
+#include "ns3/mobility-module.h"
+#include "ns3/VLC-Mobility-Model.h"
 
 namespace ns3 {
 
@@ -45,6 +47,8 @@ public:
   //Constructor
   VLCPropagationLossModel ();
   void SetTxPower(double dBm);
+  void setEfficacy (double x);
+  double getEfficacy();
   double GetTxPower();
   void SetLambertianOrder(double semiangle); //Must be in degrees
   double GetLambertianOrder();
@@ -77,7 +81,7 @@ private:
    * \returns
    */
   VLCPropagationLossModel & operator = (const VLCPropagationLossModel &);
-
+  double calculateIlluminance(Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
   double m_TxPower;
@@ -86,6 +90,8 @@ private:
   double m_ConcentratorGain;
   double m_PhotoDetectorArea;
   double m_RxPower;
+  double m_efficacy;
+  double illuminance;
 
 };
 
