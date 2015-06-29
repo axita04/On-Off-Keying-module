@@ -82,6 +82,8 @@ VLCPropagationLossModel::GetTypeId (void)
   return tid;
 }
 
+
+double VLCPropagationLossModel::Fov = 0;
 VLCPropagationLossModel::VLCPropagationLossModel ()
 {
 }
@@ -140,6 +142,7 @@ VLCPropagationLossModel::GetFilterGain ()
 void
 VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex)//,Ptr<MobilityModel> a, Ptr<MobilityModel> b)
 {
+  Fov = fov;
   /*if(fov < GetIncidenceAngle(a,b)) {
         m_ConcentratorGain = 0;
   }else{*/
@@ -234,8 +237,12 @@ VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, 
 {
 //Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
 //Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
-  
-return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
+
+if(Fov < GetIncidenceAngle(a,b)){
+  return 0;
+}else{
+  return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
+}
 }
 
 double
@@ -262,4 +269,3 @@ return illuminance;
 
 
 }/*ns3 namespace*/
-
