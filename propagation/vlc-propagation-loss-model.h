@@ -58,6 +58,7 @@ public:
 //, Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   double GetConcentratorGain();
   void SetPhotoDetectorArea(double area); // meters squared
+  static double Fov;
   double GetPhotoDetectorArea();
   double GetDistance(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double GetRadianceAngle(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
@@ -98,6 +99,3 @@ private:
 }
 
 #endif /* VLCPROPAGATIONMODEL*/
-
-
-
