@@ -142,7 +142,7 @@ VLCPropagationLossModel::GetFilterGain ()
 void
 VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex)//,Ptr<MobilityModel> a, Ptr<MobilityModel> b)
 {
-  Fov = fov;
+  Fov = fov * (M_PI/180);
   /*if(fov < GetIncidenceAngle(a,b)) {
         m_ConcentratorGain = 0;
   }else{*/
