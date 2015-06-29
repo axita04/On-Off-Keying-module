@@ -79,7 +79,7 @@ Gnuplot plot;
 Gnuplot2dDataset dataSet;
 dataSet.SetStyle(Gnuplot2dDataset::LINES);
 
-  for(double dist = 0.25 ; dist < 50.0 ; dist+=.25){
+  for(double dist = 0.01 ; dist < 10.0 ; dist+=.01){
 
 Ptr<Node> wifiAp = CreateObject<Node>();
 Ptr<Node> relayAp = CreateObject<Node>();
@@ -254,12 +254,12 @@ Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr, dstport);
 Simulator::Run();
 
 double throughput = (Received.back()*8)/ theTime.back();
-std::cout<<"-------------------------"<< std::endl;
-std::cout<<"Received : " << Received.back() << std::endl;
-std::cout<<"Distance : " << dist << std::endl;
-std::cout<<"Time : " << theTime.back() << std::endl;
-std::cout<<"THROUGHPUT : " << throughput << std::endl;
-std::cout<<"BER : " << em2->getBER() << std::endl;
+//std::cout<<"-------------------------"<< std::endl;
+//std::cout<<"Received : " << Received.back() << std::endl;
+//std::cout<<"Distance : " << dist << std::endl;
+//std::cout<<"Time : " << theTime.back() << std::endl;
+//std::cout<<"THROUGHPUT : " << throughput << std::endl;
+//std::cout<<"BER : " << em2->getBER() << std::endl;
 dataSet.Add(dist, throughput);
 Received.clear();
 
