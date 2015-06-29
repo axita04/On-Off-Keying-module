@@ -45,22 +45,41 @@ Trace (Ptr<const Packet> p)
   NS_LOG_UNCOND ("Sent Mt");
 }
 */
+Ptr<PacketSink> sink1;
+std::vector<double> Received (1,0);
+std::vector<double> theTime (1,0);
+
 static void
 RxEnd (Ptr<const Packet> p)
 {
-  NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+ // if(Received.back() != sink1->GetTotalRx()){
+ //   Received.push_back(sink1->GetTotalRx());
+ //   theTime.push_back(Simulator::Now().GetSeconds());
+ // }
+
+  Received.push_back(Received.back() + p->GetSize());
+  theTime.push_back(Simulator::Now().GetSeconds());
+
+ // NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
 }
+
 static void
 TxEnd (Ptr<const Packet> p)
 {
-  NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+ //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+  Received.push_back(Received.back() + p->GetSize());
+  theTime.push_back(Simulator::Now().GetSeconds());
+ 
 }
-
-
 
 int main (int argc, char *argv[])
 {
+Gnuplot plot;
 
+Gnuplot2dDataset dataSet;
+dataSet.SetStyle(Gnuplot2dDataset::LINES);
+
+  for(double dist = 0.25 ; dist < 50.0 ; dist+=.25){
 
 Ptr<Node> wifiAp = CreateObject<Node>();
 Ptr<Node> relayAp = CreateObject<Node>();
@@ -85,7 +104,7 @@ NetDeviceContainer ndAp_Relay = p2p.Install(wifiAp, relayAp);
   Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();
   Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();  
 
-  a -> SetPosition (Vector (0.0,0.0,5.0));
+  a -> SetPosition (Vector (0.0,0.0,dist));
   b -> SetPosition (Vector (0.0,0.0,0.0));
   a ->SetAzimuth(0.0);
   b ->SetAzimuth(0.0);
@@ -210,9 +229,10 @@ staticRoutingRelayAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.
 
   PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dstport));
   ApplicationContainer apps = sink.Install (wifiMt);
+  sink1 = DynamicCast<PacketSink>(apps.Get(0));
   apps.Start (Seconds (0.0));
   apps.Stop (Seconds (10.0));
-
+ 
 
 AsciiTraceHelper ascii;
 p2p.EnableAsciiAll(ascii.CreateFileStream ("RoutingTestCase.tr"));
@@ -224,12 +244,40 @@ LogComponentEnable("RoutingTestCase", LOG_LEVEL_INFO);
 Ptr<OutputStreamWrapper> stream1 = Create<OutputStreamWrapper> ("Table3", std::ios::out);
 ipv4RoutingHelper.PrintRoutingTableAllAt(Seconds(2.0), stream1);
 
-ndAp_Relay.Get (0)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
-ndAp_Relay.Get (0)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
+
+
+ndRelay_Mt.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
+
+ndRelay_Mt.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
 
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr, dstport);
 Simulator::Run();
+
+double throughput = (Received.back()*8)/ theTime.back();
+std::cout<<"-------------------------"<< std::endl;
+std::cout<<"Received : " << Received.back() << std::endl;
+std::cout<<"Distance : " << dist << std::endl;
+std::cout<<"Time : " << theTime.back() << std::endl;
+std::cout<<"THROUGHPUT : " << throughput << std::endl;
+std::cout<<"BER : " << em2->getBER() << std::endl;
+dataSet.Add(dist, throughput);
+Received.clear();
+
 Simulator::Destroy();
+
+
+  }
+
+std::ostringstream os;
+os << "txPower" << 48.573 <<"dbm";
+dataSet.SetTitle(os.str());
+plot.AddDataset(dataSet);
+GnuplotCollection gnuplots("RoutingTestCase.pdf");
+{
+gnuplots.AddPlot(plot);
+}
+gnuplots.GenerateOutput(std::cout);
+
 
 return 0;
 }
@@ -244,7 +292,7 @@ void StartFlow (Ptr<Socket> localSocket,
                 Ipv4Address servAddress,
                 uint16_t servPort)
 {
-  NS_LOG_INFO ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  //NS_LOG_INFO ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
   currentTxBytes = 0;
   localSocket->Bind ();
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); //connect
