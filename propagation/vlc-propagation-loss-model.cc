@@ -238,7 +238,7 @@ VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, 
 //Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
 //Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
 
-if(Fov < GetIncidenceAngle(a,b)){
+if(Fov < ((M_PI/2)-GetIncidenceAngle(a,b))){
   return 0;
 }else{
   return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
