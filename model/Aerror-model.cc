@@ -92,11 +92,13 @@ double AErrorModel::SpectralRadiance( int wavelength, double temperature){
 //Definite integral of the Luminosity Function(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
 double AErrorModel::integralLum(){
         double integral = 0;
-        
-        while(wavelength_lower <= wavelength_upper)
+        int waveLower = wavelength_lower;
+        int waveUpper = wavelength_upper;
+
+        while(waveLower <= waveUpper)
         {
-                integral += V_lambda[(wavelength_lower-380)/10] * SpectralRadiance(wavelength_lower, temp) * 10e-9;
-                wavelength_lower += 10;
+                integral += V_lambda[(waveLower-380)/10] * SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
         }
         
         return integral;
@@ -106,11 +108,13 @@ double AErrorModel::integralLum(){
 //Definite integral of the Spectral Radiance(wavelength, temperature) d(wavelength)
 double AErrorModel::integralPlanck(){
         double integral = 0;
-        
-        while(wavelength_lower <= wavelength_upper)
+        int waveLower = wavelength_lower;
+        int waveUpper = wavelength_upper;       
+
+        while(waveLower <= waveUpper)
         {
-                integral += SpectralRadiance(wavelength_lower, temp) * 10e-9;
-                wavelength_lower += 10;
+                integral += SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
         }
         
         return integral;
@@ -119,11 +123,12 @@ double AErrorModel::integralPlanck(){
 //Definite integral of the Response(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
 double AErrorModel::integralRes(){
         double integral = 0;
-        
-        while(wavelength_lower <= wavelength_upper)
+        int waveLower = wavelength_lower;
+        int waveUpper = wavelength_upper;
+        while(waveLower <= waveUpper)
         {
-                integral += Response[(wavelength_lower-380)/10] * SpectralRadiance(wavelength_lower, temp) * 10e-9;
-                wavelength_lower += 10;
+                integral += Response[(waveLower-380)/10] * SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
         }
         
         return integral;
@@ -177,7 +182,7 @@ double Responsivity = integralRes()/integralPlanck();
 
 
 
-
+//std::cout<<Rx<<": RESPONSIVITY" << std::endl;
 SNR = (std::pow((Rx*Responsivity),2)/No);
 //std::cout <<SNR << " : SNR" <<std::endl;
 double BER;
@@ -187,7 +192,7 @@ BER = 0.5*erfc(std::sqrt(SNR/2));
 }else{
 BER = 1;
 }
-BER = 0.00003;
+
 return BER;
 }
 //Set Noise power
