@@ -26,7 +26,7 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("RoutingTestCase");
-static const uint32_t totalTxBytes = 20000;
+static const uint32_t totalTxBytes = 1000000;
 static uint32_t currentTxBytes = 0;
 static const uint32_t writeSize = 1040;
 uint8_t data[writeSize];
@@ -254,14 +254,14 @@ Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr, dstport);
 Simulator::Run();
 
 double throughput = ((Received.back()*8))/ theTime.back();
-std::cout<<"-------------------------"<< std::endl;
-std::cout<<"Received : " << Received.back() << std::endl;
-std::cout<<"Distance : " << dist << std::endl;
-std::cout<<"Time : " << theTime.back() << std::endl;
-std::cout<<"THROUGHPUT : " << throughput << std::endl;
-std::cout<<"BER : " << em2->getBER() << std::endl;
+//std::cout<<"-------------------------"<< std::endl;
+//std::cout<<"Received : " << Received.back() << std::endl;
+//std::cout<<"Distance : " << dist << std::endl;
+//std::cout<<"Time : " << theTime.back() << std::endl;
+//std::cout<<"THROUGHPUT : " << throughput << std::endl;
+//std::cout<<"BER : " << em2->getBER() << std::endl;
 
-dataSet.Add(dist, em2->getBER());
+dataSet.Add(dist, throughput);
 Received.clear();
 
 Simulator::Destroy();
