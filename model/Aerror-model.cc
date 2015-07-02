@@ -22,6 +22,8 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "ns3/vlc-propagation-loss-model.h"
+
 namespace ns3 {
 
 
@@ -174,17 +176,18 @@ void AErrorModel::DoReset(void){
 
 
 }
+double res;
 //Calculates BER from SNR
 double AErrorModel::calculateBER (){
 //SNR calculation
 //double luminous_efficacy = (683*integralLum())/ integralPlanck();
 double Responsivity = integralRes()/integralPlanck();
 
+res = Responsivity;
 
-
-//std::cout<<Rx<<": RESPONSIVITY" << std::endl;
+//std::cout<<Responsivity<<": RESPONSIVITY" << std::endl;
 SNR = (std::pow((Rx*Responsivity),2)/No);
-//std::cout <<SNR << " : SNR" <<std::endl;
+std::cout <<SNR << " : SNR" <<std::endl;
 double BER;
 if(SNR > 0){
 //BER calculation
@@ -196,8 +199,31 @@ BER = 1;
 return BER;
 }
 //Set Noise power
-void AErrorModel::setNo (double n){
- No = n;
+
+void AErrorModel::setNo (double B){	//B is the Bandwidth of the electrical filter  [b/s]
+	double q = 1.60217e-19;	//electronic charge [Coulombs]
+	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
+	double I2 = 0.5620;	//noise bandwidth factor
+	double I3 = 0.0868;	//noise bandwidth factor
+	double Ib = 100;	//photocurrent due to background radiation  [A]
+	double Gol = 10;	//open-loop voltage gain
+	double Cpd = 112e-12; 	//fixed capacitance of photodetector per unit area  [pF/cm^2]
+	double gm = 30e-3;	//FET transconductance	[mS]
+	double	gamma = 1.5;	//FET channel noise factor
+	double A;		//photodetector Area	[cm^2]
+	double shot_var, thermal_var;
+
+	VLCPropagationLossModel x;
+	A = x.GetPhotoDetectorArea();
+
+	//shot variance
+	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
+	//thermal variance
+	thermal_var = ((8*M_PI*k*temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
+	
+	No = shot_var + thermal_var;
+	//std::cout << "Noise Power: " << No << std::endl;
+// No = n;
 }
 //Set Rx Power
 void AErrorModel::setRx (double x){
