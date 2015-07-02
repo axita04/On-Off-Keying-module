@@ -111,7 +111,7 @@ p2p.SetChannelAttribute("Delay", StringValue("2ms"));
 NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
 //VLC---------------------------------------------------------
  OOKHelper OOK;
-  OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  OOK.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
   
   NetDeviceContainer ndRouterAp_RelayMt1 = OOK.Install(RouterAp, relay1);
@@ -334,9 +334,9 @@ ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEn
 
 ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
 
-//ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
+ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
 
-//ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
+ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
 
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr3, dstport3);
 
