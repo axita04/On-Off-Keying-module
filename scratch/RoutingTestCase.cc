@@ -128,8 +128,8 @@ NetDeviceContainer ndAp_Relay = p2p.Install(wifiAp, relayAp);
   VPLM.SetConcentratorGain(70,1.5);
 
   //Also initial conditions, but these are made in the error model since thats where the values are used to calculate BER
-  em2->setRes(0.28);
-  em2->setNo(1.0e-11);
+  //em2->setRes(0.28);
+  em2->setNo(100e6);    //Noise bandwidth at 100Mbps
   em2->setRb(1.0e6);
   em2->setWavelengths(380,380);
   em2->setTemperature(5000);
