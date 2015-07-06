@@ -126,21 +126,24 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   Ptr<VlcMobilityModel> rx3 = CreateObject<VlcMobilityModel> (); //Rx3 
 
   tx1 -> SetPosition (Vector (0.0,0.0,5.0));
-  rx1 -> SetPosition (Vector (distx,disty,0.0));
+  //rx1 -> SetPosition (Vector (distx,disty,0.0));
+  rx1 -> SetPosition (Vector (0.0,0.0,0.0));
   tx1 ->SetAzimuth(0.0);
   rx1 ->SetAzimuth(0.0);
   tx1 ->SetElevation(0.0);
   rx1 ->SetElevation(0.0);
 
   tx2 -> SetPosition (Vector (1.5,1.5,5.0));
-  rx2 -> SetPosition (Vector (distx,disty,0.0));
+  //rx2 -> SetPosition (Vector (distx,disty,0.0));
+  rx2 -> SetPosition (Vector (1.5,1.5,0.0));
   tx2 ->SetAzimuth(0.0);
   rx2 ->SetAzimuth(0.0);
   tx2 ->SetElevation(0.0);
   rx2 ->SetElevation(0.0);
 
   tx3 -> SetPosition (Vector (-1.5,-1.5,5.0));
-  rx3 -> SetPosition (Vector (distx,disty,0.0));
+  //rx3 -> SetPosition (Vector (distx,disty,0.0));
+  rx3 -> SetPosition (Vector (-1.5,-1.5,0.0));
   tx3 ->SetAzimuth(0.0);
   rx3 ->SetAzimuth(0.0);
   tx3 ->SetElevation(0.0);
@@ -431,7 +434,7 @@ std::cout<<"BER : " << em2->getBER() << std::endl;
 */
 
 
-otherfile << distx << " " << disty << " " << x.getSNR()+y.getSNR()+z.getSNR() << std::endl;
+//otherfile << distx << " " << disty << " " << x.getSNR()+y.getSNR()+z.getSNR() << std::endl;
 
 
 Simulator::Destroy();
