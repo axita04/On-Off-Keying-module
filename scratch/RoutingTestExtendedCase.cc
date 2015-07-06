@@ -333,29 +333,29 @@ Ptr<Ipv4StaticRouting> staticRoutingMt3 = ipv4RoutingHelper.GetStaticRouting(ipv
 
 
 //The following are the specific routes added to various routing tables and this current scheme is modeing a VLC downlink and a WIFI uplink
-staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.1.2"), 1,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.2.2"), 2,1);
-staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.6.2"), 3,1);
+staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.1.2"), 1,1);  //Route From AP to MT1 : Gateway Router AP : Interface 1
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.2.2"), 2,1);//Route from Router AP to MT1 : Gateway Relay MT1 : Interface 2
+staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.6.2"), 3,1);//Route from Relay MT1 to MT1 : Gateway MT1 : Interface 3
 
-staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.1.2"), 1,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.3.2"), 3,1);
-staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.7.2"), 3,1);
+staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.1.2"), 1,1); //Route From AP to MT2 : Gateway Router AP : Interface 1
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.3.2"), 3,1);//Route from Router AP to MT2 : Gateway Relay MT2 : Interface 3
+staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.7.2"), 3,1);//Route from Relay MT2 to MT2 : Gateway MT2 : Interface 3
 
-staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.1.2"), 1,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.4.2"), 4,1);
-staticRoutingRelayMt3->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.8.2"), 3,1);
+staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.1.2"), 1,1);//Route From AP to MT3 : Gateway Router AP : Interface 1
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.4.2"), 4,1);//Route from Router AP to MT3 : Gateway Relay MT3 : Interface 4
+staticRoutingRelayMt3->AddHostRouteTo(Ipv4Address("10.1.8.2"), Ipv4Address("10.1.8.2"), 3,1);//Route from Relay MT3 to MT3 : Gateway MT3 : Interface 3
 
-staticRoutingMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.6.1"), 1,1);
-staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
+staticRoutingMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.6.1"), 1,1); //Route From MT1 to AP : Gateway Relay MT1 : Interface 1
+staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);//Route From Relay MT1 to AP : Gateway Router AP : Interface 2
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);//Route From Router AP to AP : Gateway AP : Interface 1
 
-staticRoutingMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.7.1"), 1,1);
-staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
+staticRoutingMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.7.1"), 1,1); //Route From MT2 to AP : Gateway Relay MT1 : Interface 1
+staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);//Route From Relay MT2 to AP : Gateway Router AP : Interface 2
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);//Route From Router AP to AP : Gateway AP : Interface 1
 
-staticRoutingMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.8.1"), 1,1);
-staticRoutingRelayMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
+staticRoutingMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.8.1"), 1,1); //Route From MT3 to AP : Gateway Relay MT1 : Interface 1
+staticRoutingRelayMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);//Route From Relay MT3 to AP : Gateway Router AP : Interface 2
+staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);//Route From Router AP to AP : Gateway AP : Interface 1
 
 //This sets up various sockets on the same node as to allow multiple TCP connections to be made as to pass information through the net devices
  Ptr<Socket> srcSocket1 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
