@@ -29,46 +29,54 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
 
-  static double calculateBER ();
+  //static TypeId GetTypeId (void);
 
-  static void calculateEb();
+  double No;   // Noise power in A^2
+  double Rx;   // Received Power in dbm
+  double BER;  // Bit Error Rate
+  double Rb;   // Data Rate
+  double Res;   //Responsitivity of Receiver
+  double Tb;   // 1 / data rate
+  double SNR;  //Signal to noise ratio
 
-  static double SpectralRadiance(int wavelength, double temperature);
+  double calculateBER ();
 
-  static double integralLum();
+  void calculateEb();
 
-  static double integralPlanck();
+  double SpectralRadiance(int wavelength, double temperature);
 
-  static double integralRes();
+  double integralLum();
 
-  static void setWavelengths(int lower, int upper);
+  double integralPlanck();
 
-  static void setTemperature(int T);
+  double integralRes();
 
-  static double getWavelengthUpper();
+  void setWavelengths(int lower, int upper);
 
-  static double getWavelengthLower();
+  void setTemperature(int T);
 
-  static double getTemperature();
+  double getWavelengthUpper();
 
-  static void setNo (double n, double a);
+  double getWavelengthLower();
 
-  static void setRx (double x);
+  double getTemperature();
 
-  static void setRb (double b);
+  void setNo (double n, double a);
 
-  static void setRes (double r);
+  void setRx (double x);
 
-  static double getEb(void);
+  void setRb (double b);
 
-  static double getBER(void);
+  void setRes (double r);
+
+  double getEb(void);
+
+  double getBER(void);
   
-  static double getNo(void);
+  double getNo(void);
 
-  static double getSNR(void);
-
+  double getSNR(void);
    
 private:
 
