@@ -53,7 +53,7 @@ public:
 
   static double getTemperature();
 
-  static void setNo (double n);
+  static void setNo (double n, double a);
 
   static void setRx (double x);
 
