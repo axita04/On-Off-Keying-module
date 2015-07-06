@@ -74,10 +74,9 @@ TxEnd (Ptr<const Packet> p)
 
 int main (int argc, char *argv[])
 {
-Gnuplot plot;
 
-Gnuplot2dDataset dataSet;
-dataSet.SetStyle(Gnuplot2dDataset::LINES);
+std::ofstream TCPYfile;
+TCPYfile.open("TCPYtest.dat");
 
   for(double dist = 1 ; dist < 3.5 ; dist+=.005){
 
@@ -261,8 +260,7 @@ double throughput = ((Received.back()*8))/ theTime.back();
 //std::cout<<"Time : " << theTime.back() << std::endl;
 //std::cout<<"THROUGHPUT : " << throughput << std::endl;
 //std::cout<<"BER : " << em2->getBER() << std::endl;
-
-dataSet.Add(dist, throughput);
+TCPYfile <<dist << " " << throughput << std::endl;
 Received.clear();
 
 Simulator::Destroy();
@@ -270,16 +268,7 @@ Simulator::Destroy();
 
   }
 
-std::ostringstream os;
-os << "txPower" << 48.573 <<"dbm";
-dataSet.SetTitle(os.str());
-plot.AddDataset(dataSet);
-GnuplotCollection gnuplots("RoutingTestCase.pdf");
-{
-gnuplots.AddPlot(plot);
-}
-gnuplots.GenerateOutput(std::cout);
-
+TCPYfile.close();
 
 return 0;
 }
