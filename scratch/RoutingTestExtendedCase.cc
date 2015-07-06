@@ -27,11 +27,11 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("RoutingTestCase");
-static const uint32_t totalTxBytes = 1000000;
+static const uint32_t totalTxBytes = 1000000; //The simulation with send 1000000 bytes in data packets (not including overhead)
 static uint32_t currentTxBytes = 0;
-static const uint32_t writeSize = 1040;
+static const uint32_t writeSize = 1040;// How big each packet will be, default for TCP is 536 w/out headers
 uint8_t data[writeSize];
-void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
+void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t); //send data
 void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
 
 
@@ -46,6 +46,7 @@ Trace (Ptr<const Packet> p)
   NS_LOG_UNCOND ("Sent Mt");
 }
 */
+//Sinks nd packet sinks used for tracing on the various client nodes
 Ptr<PacketSink> sink1;
 Ptr<PacketSink> sink2;
 Ptr<PacketSink> sink3;
@@ -59,31 +60,31 @@ std::vector<double> theTime3 (1,0);
 std::vector<double> theTimeT (1,0);
 
 static void
-RxEnd (Ptr<const Packet> p)
+RxEnd (Ptr<const Packet> p)//used for tracing and calculating throughput
 {
-  Received.push_back(Received.back() + p->GetSize());
-  theTime.push_back(Simulator::Now().GetSeconds());
+  Received.push_back(Received.back() + p->GetSize());//appends on the received packet to the received data up until that packet and adds that total to the end of the vector
+  theTime.push_back(Simulator::Now().GetSeconds());// keeps track of the time during simulation that a packet is received
 
 
-   ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
+   ReceivedT.push_back(ReceivedT.back() + p->GetSize());// same as above except for the fact that this is used for the total throughput
+  theTimeT.push_back(Simulator::Now().GetSeconds());// rather than throughput for a specific client
 //  NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
 }
 
 static void
-TxEnd (Ptr<const Packet> p)
+TxEnd (Ptr<const Packet> p)//also used as a trace and for calculating throughput
 {
  //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
-  Received.push_back(Received.back() + p->GetSize());
-  theTime.push_back(Simulator::Now().GetSeconds());
+  Received.push_back(Received.back() + p->GetSize());//same as for RX end trace
+  theTime.push_back(Simulator::Now().GetSeconds());//
  
-     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
+     ReceivedT.push_back(ReceivedT.back() + p->GetSize());//same as for RX end trace
+  theTimeT.push_back(Simulator::Now().GetSeconds());//
    
 }
 
 static void
-RxEnd2 (Ptr<const Packet> p)
+RxEnd2 (Ptr<const Packet> p)//used for second node
 {
 
   Received2.push_back(Received2.back() + p->GetSize());
@@ -96,7 +97,7 @@ RxEnd2 (Ptr<const Packet> p)
 }
 
 static void
-TxEnd2 (Ptr<const Packet> p)
+TxEnd2 (Ptr<const Packet> p)//used for second node
 {
  //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
   Received2.push_back(Received2.back() + p->GetSize());
@@ -108,7 +109,7 @@ TxEnd2 (Ptr<const Packet> p)
 }
 
 static void
-RxEnd3 (Ptr<const Packet> p)
+RxEnd3 (Ptr<const Packet> p) // used for third node
 {
 
   Received3.push_back(Received3.back() + p->GetSize());
@@ -121,7 +122,7 @@ RxEnd3 (Ptr<const Packet> p)
 }
 
 static void
-TxEnd3 (Ptr<const Packet> p)
+TxEnd3 (Ptr<const Packet> p)//used for third node
 {
  //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
   Received3.push_back(Received3.back() + p->GetSize());
@@ -135,6 +136,7 @@ TxEnd3 (Ptr<const Packet> p)
 
 int main (int argc, char *argv[])
 {
+//used instead of gnuplot for monitoring reasons while the simulation is running but the data can still be plotted later with gnuplot
 std::ofstream myfile1;
 myfile1.open("node1.dat");
 
@@ -148,8 +150,10 @@ std::ofstream myfile;
 myfile.open("total.dat");
 
 
-  for(double dist = 6.50 ; dist < 8.1 ; dist+=.001){
+  for(double dist = 6.50 ; dist < 8.1 ; dist+=.001){//loops the simulation by increasing distance between nodes
 
+
+//creating each node object
 Ptr<Node> Ap = CreateObject<Node>();
 Ptr<Node> RouterAp = CreateObject<Node>();
 Ptr<Node> relay1 = CreateObject<Node>();
@@ -159,6 +163,7 @@ Ptr<Node> Mt2 = CreateObject<Node>();
 Ptr<Node> relay3 = CreateObject<Node>();
 Ptr<Node> Mt3 = CreateObject<Node>();
 
+//puts all the nodes into one place
 NodeContainer c = NodeContainer(Ap,RouterAp);
 c.Add(relay1);
 c.Add(Mt1);
@@ -168,15 +173,16 @@ c.Add(relay3);
 c.Add(Mt3);
 
 
-InternetStackHelper internet;
+InternetStackHelper internet;//This helper handles making all the components of the internet stack that will be layered on top on the already exsisting network
 internet.Install(c);
 
+//This helper sets up the P2P connections that we will be using
 PointToPointHelper p2p;
 p2p.SetDeviceAttribute("DataRate", StringValue("200Mbps"));
 p2p.SetChannelAttribute("Delay", StringValue("2ms"));
 NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
 //VLC---------------------------------------------------------
- OOKHelper OOK;
+ OOKHelper OOK;// This helper makes the VLC channel that we are going to use
   OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
   
@@ -184,8 +190,8 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   NetDeviceContainer ndRouterAp_RelayMt2 = OOK.Install(RouterAp, relay2);
   NetDeviceContainer ndRouterAp_RelayMt3 = OOK.Install(RouterAp, relay3);
 
-  Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();
-  Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();  
+  Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();//These vectors are what represent the nodes moving
+  Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();//in space  
 
   a -> SetPosition (Vector (0.0,0.0,dist));
   b -> SetPosition (Vector (0.0,0.0,0.0));
@@ -194,10 +200,12 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   a ->SetElevation(0.0);
   b ->SetElevation(0.0);
 
+  //Instaniates an Error model to use on the VLC net devices
   AErrorModel *em2 ;
   AErrorModel x;
   em2 = &x;
 
+  //Sets the initial conditions of the transmitter and receiver in the VLC network
   VLCPropagationLossModel VPLM;
   VPLM.SetTxPower(48.573);
   VPLM.SetLambertianOrder(70);
@@ -205,6 +213,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
 
+  //Also initial conditions, but these are made in the error model since thats where the values are used to calculate BER
   em2->setRes(0.28);
   em2->setNo(1.0e-11);
   em2->setRb(1.0e6);
@@ -212,6 +221,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   em2->setTemperature(5000);
   em2->setRx(VPLM.GetRxPower(a,b));
 
+  //putting the error model on each VLC device
   ndRouterAp_RelayMt1.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
   ndRouterAp_RelayMt1.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
 
@@ -274,8 +284,7 @@ NetDeviceContainer ndRelay_Mt1 = p2p.Install(relay1, Mt1);
 NetDeviceContainer ndRelay_Mt2 = p2p.Install(relay2, Mt2);
 NetDeviceContainer ndRelay_Mt3 = p2p.Install(relay3, Mt3);
 
-
-
+//The following sets up address bases for out net devices on the nodes so as to identify them on a routing table as we do
 Ipv4AddressHelper ipv4;
 ipv4.SetBase("10.1.1.0", "255.255.255.0");
 Ipv4InterfaceContainer iAp = ipv4.Assign(ndAp_Router);
@@ -301,6 +310,7 @@ Ipv4InterfaceContainer iMt2 = ipv4.Assign(ndRelay_Mt2);
 ipv4.SetBase("10.1.8.0", "255.255.255.0");
 Ipv4InterfaceContainer iMt3 = ipv4.Assign(ndRelay_Mt3);
 
+//The following sets up each nodes routing table that will be statically added to
 Ptr<Ipv4> ipv4Ap = Ap->GetObject<Ipv4>();
 Ptr<Ipv4> ipv4RouterAp = RouterAp->GetObject<Ipv4>();
 Ptr<Ipv4> ipv4RelayMt1 = relay1->GetObject<Ipv4>();
@@ -322,7 +332,7 @@ Ptr<Ipv4StaticRouting> staticRoutingMt2 = ipv4RoutingHelper.GetStaticRouting(ipv
 Ptr<Ipv4StaticRouting> staticRoutingMt3 = ipv4RoutingHelper.GetStaticRouting(ipv4Mt3);
 
 
-
+//The following are the specific routes added to various routing tables and this current scheme is modeing a VLC downlink and a WIFI uplink
 staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.1.2"), 1,1);
 staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.2.2"), 2,1);
 staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.6.2"), 3,1);
@@ -347,6 +357,7 @@ staticRoutingMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.8.1"
 staticRoutingRelayMt3->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,1);
 staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
 
+//This sets up various sockets on the same node as to allow multiple TCP connections to be made as to pass information through the net devices
  Ptr<Socket> srcSocket1 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
   Ptr<Socket> srcSocket2 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
   Ptr<Socket> srcSocket3 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
@@ -356,6 +367,7 @@ staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1
   Ptr<Socket> srcSocket7 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
   Ptr<Socket> srcSocket8 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
 
+//The following sets up ports on the various clients
   uint16_t dstport1 = 12345;
   Ipv4Address dstaddr1 ("10.1.6.2");
 
@@ -385,7 +397,7 @@ uint16_t dstport3 = 12347;
   apps.Stop (Seconds (10.0));
 
 
-
+//The following is used for logginbg and various debugging purposes
 AsciiTraceHelper ascii;
 p2p.EnableAsciiAll(ascii.CreateFileStream ("RoutingTestCase.tr"));
 p2p.EnablePcapAll("RoutingTestCase");
@@ -397,7 +409,7 @@ Ptr<OutputStreamWrapper> stream1 = Create<OutputStreamWrapper> ("Table3", std::i
 ipv4RoutingHelper.PrintRoutingTableAllAt(Seconds(2.0), stream1);
 
 
-
+//Trace set ups
 ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd3));
 
 ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd3));
@@ -410,7 +422,7 @@ ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEn
 
 ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd2));
 
-
+//simulator schedule
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr3, dstport3);
 
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket2, dstaddr1, dstport1);
@@ -419,6 +431,7 @@ Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket3, dstaddr2, dstport2);
 
 Simulator::Run();
 
+//various throughput calculations
 double throughput1 = ((Received.back()*8))/ theTime.back();
 double throughput2 = ((Received2.back()*8))/ theTime2.back();
 double throughput3 = ((Received3.back()*8))/ theTime3.back();
@@ -431,12 +444,13 @@ double totalThroughput = ((ReceivedT.back()*8))/ theTimeT.back();
 //std::cout<<"THROUGHPUT : " << throughput << std::endl;
 //std::cout<<"BER : " << em2->getBER() << std::endl;
 
+//writing to the files that will carry the data to be graphed
 myfile <<dist << " " << totalThroughput <<std::endl;
 myfile1 <<dist << " " << throughput1 <<std::endl;
 myfile2 <<dist << " " << throughput2 <<std::endl;
 myfile3 <<dist << " " << throughput3 <<std::endl; 
 
-
+//the following clears the data received vectors so as to avoid calculation errors from old and irrelevant values
 Received.clear();
 Received2.clear();
 Received3.clear();
@@ -448,7 +462,7 @@ Simulator::Destroy();
 
 }
  
-
+//closes stream files
 myfile.close();
 myfile1.close();
 myfile2.close();
