@@ -204,7 +204,7 @@ void AErrorModel::setNo (double B, double A){	//B is the Bandwidth of the electr
 	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
 	double I2 = 0.5620;	//noise bandwidth factor
 	double I3 = 0.0868;	//noise bandwidth factor
-	double Ib = 100;	//photocurrent due to background radiation  [A]
+	double Ib = 100e-3;	//photocurrent due to background radiation  [A]
 	double Gol = 10;	//open-loop voltage gain
 	double Cpd = 112e-12; 	//fixed capacitance of photodetector per unit area  [pF/cm^2]
 	double gm = 30e-3;	//FET transconductance	[mS]
