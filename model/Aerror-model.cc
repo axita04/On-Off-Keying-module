@@ -22,7 +22,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "ns3/vlc-propagation-loss-model.h"
 
 namespace ns3 {
 
@@ -187,7 +186,7 @@ res = Responsivity;
 
 //std::cout<<Responsivity<<": RESPONSIVITY" << std::endl;
 SNR = (std::pow((Rx*Responsivity),2)/No);
-std::cout <<SNR << " : SNR" <<std::endl;
+//std::cout <<SNR << " : SNR" <<std::endl;
 double BER;
 if(SNR > 0){
 //BER calculation
@@ -200,7 +199,7 @@ return BER;
 }
 //Set Noise power
 
-void AErrorModel::setNo (double B){	//B is the Bandwidth of the electrical filter  [b/s]
+void AErrorModel::setNo (double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
 	double q = 1.60217e-19;	//electronic charge [Coulombs]
 	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
 	double I2 = 0.5620;	//noise bandwidth factor
@@ -210,11 +209,7 @@ void AErrorModel::setNo (double B){	//B is the Bandwidth of the electrical filte
 	double Cpd = 112e-12; 	//fixed capacitance of photodetector per unit area  [pF/cm^2]
 	double gm = 30e-3;	//FET transconductance	[mS]
 	double	gamma = 1.5;	//FET channel noise factor
-	double A;		//photodetector Area	[cm^2]
 	double shot_var, thermal_var;
-
-	VLCPropagationLossModel x;
-	A = x.GetPhotoDetectorArea();
 
 	//shot variance
 	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
@@ -248,6 +243,7 @@ return BER;
 }
 //Gets SNR
 double AErrorModel::getSNR(void){
+std::cout <<SNR << " : SNR" <<std::endl;
 return SNR;
 }
 
