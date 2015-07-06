@@ -34,13 +34,7 @@ NS_LOG_COMPONENT_DEFINE("AErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (AErrorModel);
 
-double No = 0;   // Noise power in A^2
-double Rx = 0;   // Received Power in dbm
-double BER = 0;  // Bit Error Rate
-double Rb = 0;   // Data Rate
-double Res =1;   //Responsitivity of Receiver
-double Tb = 0;   // 1 / data rate
-double SNR = 0;  //Signal to noise ratio
+
 double V_lambda[] = { 
 0.000039, 0.000120, 0.000396, 0.001210, 0.004000, 0.011600, 0.023000, 
 0.038000, 0.060000, 0.090980, 0.139020, 0.208020, 0.323000,  0.503000, 
@@ -70,7 +64,7 @@ AErrorModel::~AErrorModel ()
 {
   NS_LOG_FUNCTION (this);
 }
-
+/*
 TypeId AErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::AErrorModel")
@@ -80,7 +74,7 @@ TypeId AErrorModel::GetTypeId (void)
      ;
   return tid;
 }
-
+*/
 double AErrorModel::SpectralRadiance( int wavelength, double temperature){
         double spectral_rad;
         double h = 6.62606957e-34; //Planck's constant
@@ -219,7 +213,7 @@ void AErrorModel::setNo (double B, double A){	//B is the Bandwidth of the electr
 	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
 	
 	No = shot_var + thermal_var;
-	std::cout << "Noise Power: " << No << std::endl;
+	//std::cout << "Noise Power: " << No << std::endl;
 // No = n;
 }
 //Set Rx Power
@@ -245,8 +239,8 @@ return BER;
 }
 //Gets SNR
 double AErrorModel::getSNR(void){
-std::cout <<SNR << " : SNR" <<std::endl;
 return SNR;
 }
+
 
 } // namespace ns3
