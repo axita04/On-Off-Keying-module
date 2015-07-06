@@ -4,7 +4,13 @@ fid=fopen('sim2.txt');
 XYZ=fscanf(fid,'%f %f %f',[3 Inf]);
 fclose(fid);
 
-plot3(XYZ(1,:), XYZ(2,:), XYZ(3,:));
+%plot3(XYZ(1,:), XYZ(2,:), XYZ(3,:));
+
+x = reshape(XYZ(1,:),50,50)';
+y = reshape(XYZ(2,:),50,50)';
+z = reshape(XYZ(3,:),50,50)';
+
+surf(x, y, z);
 
 title('SNR in a 5x5x5 room');
 xlabel('x [m]');
