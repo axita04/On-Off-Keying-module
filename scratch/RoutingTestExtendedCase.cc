@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <string>
 #include <cassert>
 
@@ -49,39 +50,105 @@ Ptr<PacketSink> sink1;
 Ptr<PacketSink> sink2;
 Ptr<PacketSink> sink3;
 std::vector<double> Received (1,0);
+std::vector<double> Received2 (1,0);
+std::vector<double> Received3 (1,0);
+std::vector<double> ReceivedT (1,0);
 std::vector<double> theTime (1,0);
+std::vector<double> theTime2 (1,0);
+std::vector<double> theTime3 (1,0);
+std::vector<double> theTimeT (1,0);
 
 static void
 RxEnd (Ptr<const Packet> p)
 {
- // if(Received.back() != sink1->GetTotalRx()){
- //   Received.push_back(sink1->GetTotalRx());
- //   theTime.push_back(Simulator::Now().GetSeconds());
- // }
-
   Received.push_back(Received.back() + p->GetSize());
   theTime.push_back(Simulator::Now().GetSeconds());
 
-  NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+
+   ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+//  NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
 }
 
 static void
 TxEnd (Ptr<const Packet> p)
 {
- NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+ //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
   Received.push_back(Received.back() + p->GetSize());
   theTime.push_back(Simulator::Now().GetSeconds());
  
+     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+   
 }
+
+static void
+RxEnd2 (Ptr<const Packet> p)
+{
+
+  Received2.push_back(Received2.back() + p->GetSize());
+  theTime2.push_back(Simulator::Now().GetSeconds());
+
+     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+
+  //NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+}
+
+static void
+TxEnd2 (Ptr<const Packet> p)
+{
+ //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+  Received2.push_back(Received2.back() + p->GetSize());
+  theTime2.push_back(Simulator::Now().GetSeconds());
+ 
+
+      ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+}
+
+static void
+RxEnd3 (Ptr<const Packet> p)
+{
+
+  Received3.push_back(Received3.back() + p->GetSize());
+  theTime3.push_back(Simulator::Now().GetSeconds());
+
+
+     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+  //NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+}
+
+static void
+TxEnd3 (Ptr<const Packet> p)
+{
+ //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+  Received3.push_back(Received3.back() + p->GetSize());
+  theTime3.push_back(Simulator::Now().GetSeconds());
+ 
+
+      ReceivedT.push_back(ReceivedT.back() + p->GetSize());
+  theTimeT.push_back(Simulator::Now().GetSeconds());
+}
+
 
 int main (int argc, char *argv[])
 {
-Gnuplot plot;
+std::ofstream myfile1;
+myfile1.open("node1.dat");
 
-Gnuplot2dDataset dataSet;
-dataSet.SetStyle(Gnuplot2dDataset::LINES);
+std::ofstream myfile2;
+myfile2.open("node2.dat");
 
-  //for(double dist = 6.50 ; dist < 8.1 ; dist+=.001){
+std::ofstream myfile3;
+myfile3.open("node3.dat");
+
+std::ofstream myfile;
+myfile.open("total.dat");
+
+
+  for(double dist = 6.50 ; dist < 8.1 ; dist+=.001){
 
 Ptr<Node> Ap = CreateObject<Node>();
 Ptr<Node> RouterAp = CreateObject<Node>();
@@ -92,7 +159,6 @@ Ptr<Node> Mt2 = CreateObject<Node>();
 Ptr<Node> relay3 = CreateObject<Node>();
 Ptr<Node> Mt3 = CreateObject<Node>();
 
-//NodeContainer c = NodeContainer(Ap,RouterAp,relay1,Mt1,relay2,Mt2,relay3,Mt3);
 NodeContainer c = NodeContainer(Ap,RouterAp);
 c.Add(relay1);
 c.Add(Mt1);
@@ -106,12 +172,12 @@ InternetStackHelper internet;
 internet.Install(c);
 
 PointToPointHelper p2p;
-p2p.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
+p2p.SetDeviceAttribute("DataRate", StringValue("200Mbps"));
 p2p.SetChannelAttribute("Delay", StringValue("2ms"));
 NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
 //VLC---------------------------------------------------------
  OOKHelper OOK;
-  OOK.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
+  OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
   
   NetDeviceContainer ndRouterAp_RelayMt1 = OOK.Install(RouterAp, relay1);
@@ -121,7 +187,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();
   Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();  
 
-  a -> SetPosition (Vector (0.0,0.0,5.0));
+  a -> SetPosition (Vector (0.0,0.0,dist));
   b -> SetPosition (Vector (0.0,0.0,0.0));
   a ->SetAzimuth(0.0);
   b ->SetAzimuth(0.0);
@@ -158,7 +224,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
 
 //------------------------------------------------------------
 //Wifi--------------------------------------------------------
- std::string phyMode ("DsssRate1Mbps");
+ std::string phyMode ("DsssRate11Mbps");
   double rss = -80;  // -dBm
 
 NodeContainer cont = NodeContainer(RouterAp, relay1);
@@ -318,6 +384,8 @@ uint16_t dstport3 = 12347;
   apps.Start (Seconds (0.0));
   apps.Stop (Seconds (10.0));
 
+
+
 AsciiTraceHelper ascii;
 p2p.EnableAsciiAll(ascii.CreateFileStream ("RoutingTestCase.tr"));
 p2p.EnablePcapAll("RoutingTestCase");
@@ -330,46 +398,61 @@ ipv4RoutingHelper.PrintRoutingTableAllAt(Seconds(2.0), stream1);
 
 
 
-ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
+ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd3));
 
-ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
+ndRelay_Mt3.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd3));
 
 ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
 
 ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
 
+ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd2));
+
+ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd2));
+
+
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr3, dstport3);
 
 Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket2, dstaddr1, dstport1);
 
+Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket3, dstaddr2, dstport2);
+
 Simulator::Run();
 
-double throughput = ((Received.back()*8))/ theTime.back();
-std::cout<<"-------------------------"<< std::endl;
-std::cout<<"Received : " << Received.back() << std::endl;
-//std::cout<<"Distance : " << dist << std::endl;
-std::cout<<"Time : " << theTime.back() << std::endl;
-std::cout<<"THROUGHPUT : " << throughput << std::endl;
-std::cout<<"BER : " << em2->getBER() << std::endl;
+double throughput1 = ((Received.back()*8))/ theTime.back();
+double throughput2 = ((Received2.back()*8))/ theTime2.back();
+double throughput3 = ((Received3.back()*8))/ theTime3.back();
+double totalThroughput = ((ReceivedT.back()*8))/ theTimeT.back();
 
-dataSet.Add(em2->getBER(), throughput);
+//std::cout<<"-------------------------"<< std::endl;
+//std::cout<<"Received : " << Received.back() << std::endl;
+//std::cout<<"Distance : " << dist << std::endl;
+//std::cout<<"Time : " << theTime.back() << std::endl;
+//std::cout<<"THROUGHPUT : " << throughput << std::endl;
+//std::cout<<"BER : " << em2->getBER() << std::endl;
+
+myfile <<dist << " " << totalThroughput <<std::endl;
+myfile1 <<dist << " " << throughput1 <<std::endl;
+myfile2 <<dist << " " << throughput2 <<std::endl;
+myfile3 <<dist << " " << throughput3 <<std::endl; 
+
+
 Received.clear();
+Received2.clear();
+Received3.clear();
+ReceivedT.clear();
+
+
 
 Simulator::Destroy();
 
-
- // }
-
-std::ostringstream os;
-os << "txPower" << 48.573 <<"dbm";
-dataSet.SetTitle(os.str());
-plot.AddDataset(dataSet);
-GnuplotCollection gnuplots("RoutingTestCase.pdf");
-{
-gnuplots.AddPlot(plot);
 }
-gnuplots.GenerateOutput(std::cout);
+ 
 
+myfile.close();
+myfile1.close();
+myfile2.close();
+myfile3.close();
 
 return 0;
 }
