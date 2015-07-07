@@ -49,9 +49,7 @@ double Response[] = {
 0.390, 0.400, 0.415, 0.420, 0.430, 0.440, 0.450, 0.460, 0.470, 0.475,
 0.480, 0.485, 0.490, 0.495, 0.500, 0.505, 0.510, 0.520, 0.526, 0.532 };
 
-int wavelength_lower;
-int wavelength_upper;
-double temp;
+
 
 //Constructor
 AErrorModel::AErrorModel ()
@@ -129,17 +127,6 @@ double AErrorModel::integralRes(){
         return integral;
 }
 
-void AErrorModel::setWavelengths(int lower, int upper)
-{
-  wavelength_lower = lower;
-  wavelength_upper = upper;
-}
-
-void AErrorModel::setTemperature(int T)
-{
-  temp = T;
-}
-
 double AErrorModel::getWavelengthUpper()
 {
   return wavelength_lower;
@@ -169,18 +156,11 @@ void AErrorModel::DoReset(void){
 
 
 }
-double res;
+
 //Calculates BER from SNR
 double AErrorModel::calculateBER (){
 //SNR calculation
-//double luminous_efficacy = (683*integralLum())/ integralPlanck();
-double Responsivity = integralRes()/integralPlanck();
-
-res = Responsivity;
-
-//std::cout<<Responsivity<<": RESPONSIVITY" << std::endl;
-SNR = (std::pow((Rx*Responsivity),2)/No);
-//std::cout <<SNR << " : SNR" <<std::endl;
+SNR = (std::pow((Rx*res),2)/No);
 double BER;
 if(SNR > 0){
 //BER calculation
@@ -189,12 +169,19 @@ BER = 0.5*erfc(std::sqrt(SNR/2));
 BER = 1;
 }
 
-//std::cout << "BER: " << BER << std::endl;
+
 return BER;
 }
 //Set Noise power
 
-void AErrorModel::setNo (double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+void AErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+       wavelength_lower = lower;
+       wavelength_upper = upper;
+        temp = T;
+
+       res = integralRes()/integralPlanck();
+       
+   
 	double q = 1.60217e-19;	//electronic charge [Coulombs]
 	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
 	double I2 = 0.5620;	//noise bandwidth factor
@@ -209,26 +196,19 @@ void AErrorModel::setNo (double B, double A){	//B is the Bandwidth of the electr
 
 	//shot variance
 	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
+        std::cout<<"RES : " << res << std::endl;        
+        std::cout<<"SHOT : " << shot_var << std::endl;   
+
 	//thermal variance
 	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
 	
 	No = shot_var + thermal_var;
-	//std::cout << "Noise Power: " << No << std::endl;
-// No = n;
 }
 //Set Rx Power
 void AErrorModel::setRx (double x){
 Rx = x;
 }
-//Sets bit rate and inverse of bit rate
-void AErrorModel::setRb (double b){
-Rb =b;
-Tb = 1/Rb;
-}
-//Sets resposetivity
-void AErrorModel::setRes (double r){
-Res = r;
-}
+
 //Gets Noise power
 double AErrorModel::getNo(void){
 return No;
