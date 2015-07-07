@@ -146,7 +146,7 @@ VLCPropagationLossModel::SetConcentratorGain (double fov, double refracIndex)//,
   /*if(fov < GetIncidenceAngle(a,b)) {
         m_ConcentratorGain = 0;
   }else{*/
-        m_ConcentratorGain = std::pow(refracIndex,2) / std::pow(std::sin(fov),2);
+        m_ConcentratorGain = std::pow(refracIndex,2) / std::pow(std::sin(Fov),2);
   //}
 }
 
@@ -196,9 +196,9 @@ Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
 
 std::vector<double> v1,v2;
 
-v1.push_back((a->GetPosition().x - b->GetPosition().x));
-v1.push_back((a->GetPosition().y - b->GetPosition().y));
-v1.push_back((a->GetPosition().z - b->GetPosition().z));
+v1.push_back((a->GetPosition().x - b->GetPosition().x)*-1);
+v1.push_back((a->GetPosition().y - b->GetPosition().y)*-1);
+v1.push_back((a->GetPosition().z - b->GetPosition().z)*-1);
 
 v2.push_back(std::sin(x->GetElevation()) * std::cos(x->GetAzimuth()));
 v2.push_back(std::sin(x->GetElevation()) * std::sin(x->GetAzimuth()));
@@ -219,15 +219,15 @@ Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
 
 std::vector<double> v1,v2;
 
-v1.push_back((a->GetPosition().x - b->GetPosition().x)*-1);
-v1.push_back((a->GetPosition().y - b->GetPosition().y)*-1);
-v1.push_back((a->GetPosition().z - b->GetPosition().z)*-1);
+v1.push_back((a->GetPosition().x - b->GetPosition().x));
+v1.push_back((a->GetPosition().y - b->GetPosition().y));
+v1.push_back((a->GetPosition().z - b->GetPosition().z));
 
 v2.push_back(std::sin(y->GetElevation()) * std::cos(y->GetAzimuth()));
 v2.push_back(std::sin(y->GetElevation()) * std::sin(y->GetAzimuth()));
 v2.push_back(std::cos(y->GetElevation()));
 
-double angle = std::acos(dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2) ));
+double angle = std::acos(dotProduct(v1,v2)/(magnitude(v1)*magnitude(v2)));
 //std::cout << "INC ANGLE : " << angle << std::endl;
 return (angle);
 }
@@ -238,7 +238,7 @@ VLCPropagationLossModel::DoCalcRxPower(double TxPowerDbm, Ptr<MobilityModel> a, 
 //Ptr<VlcMobilityModel> x = DynamicCast<VlcMobilityModel >(a);
 //Ptr<VlcMobilityModel> y = DynamicCast<VlcMobilityModel >(b);
 
-if(Fov < ((M_PI/2)-GetIncidenceAngle(a,b))){
+if(Fov < (GetIncidenceAngle(a,b))){
   return 0;
 }else{
   return (m_TxPower) * (((m_LambertianOrder + 1) * m_PhotoDetectorArea) / (2 * M_PI * std::pow(GetDistance(a,b),2))) * (std::pow(std::cos(GetRadianceAngle(a,b)),m_LambertianOrder)) * m_FilterGain * m_ConcentratorGain * std::cos(GetIncidenceAngle(a,b));//the equation for getting power received and it is is dBm
