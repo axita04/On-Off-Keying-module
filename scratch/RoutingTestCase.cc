@@ -12,7 +12,7 @@
 #include "ns3/netanim-module.h"
 #include "ns3/on-off-keying-module-helper.h"
 #include "ns3/applications-module.h"
-#include "ns3/Aerror-model.h"
+#include "ns3/OOK-error-model.h"
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/packet-sink.h"
 #include "ns3/gnuplot.h"
@@ -115,8 +115,8 @@ NetDeviceContainer ndAp_Relay = p2p.Install(wifiAp, relayAp);
   b ->SetElevation(0.0);
 
   //Instaniates an Error model to use on the VLC net devices
-  AErrorModel *em2 ;
-  AErrorModel x;
+  OOKErrorModel *em2 ;
+  OOKErrorModel x;
   em2 = &x;
 
   //Sets the initial conditions of the transmitter and receiver in the VLC network
