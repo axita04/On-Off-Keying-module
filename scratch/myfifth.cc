@@ -213,7 +213,7 @@ NodeContainer nodes;
   VPLM.SetConcentratorGain(70,1.5);
   
 
-  em2->setNo(380,380,5000,100e6,VLPM.GetPhotoDetectorArea());
+  em2->setNo(380,380,5000,100e6,VPLM.GetPhotoDetectorArea());
   em2->setRx(VPLM.GetRxPower(a,b));
 
   
