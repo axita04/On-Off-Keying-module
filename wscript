@@ -15,6 +15,8 @@ def build(bld):
         'model/on-off-keying-net-device.cc',
         'model/on-off-keying-remote-channel.cc',
         'model/OOK-header.cc',
+        'model/OOK-error-model.cc',
+        'model/vlc-propagation-loss-model.cc',
         'model/VLC-Mobility-Model.cc',
         ]
 
@@ -32,7 +34,9 @@ def build(bld):
         'model/on-off-keying-channel.h',
         'model/on-off-keying-remote-channel.h',
         'model/OOK-header.h',
-        'model/VLC-Mobility-Model.h"
+        'model/OOK-error-model.h',
+        'model/vlc-propagation-loss-model.h',
+        'model/VLC-Mobility-Model.h',
         ]
 
     if bld.env.ENABLE_EXAMPLES:
