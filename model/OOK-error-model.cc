@@ -196,8 +196,8 @@ void OOKErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B
 
 	//shot variance
 	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
-        std::cout<<"RES : " << res << std::endl;        
-        std::cout<<"SHOT : " << shot_var << std::endl;   
+        //std::cout<<"RES : " << res << std::endl;        
+        //std::cout<<"SHOT : " << shot_var << std::endl;   
 
 	//thermal variance
 	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
