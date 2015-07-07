@@ -1,6 +1,6 @@
 
-#ifndef A_ERROR_MODEL_H
-#define A_ERROR_MODEL_H
+#ifndef OOK_ERROR_MODEL_H
+#define OOK_ERROR_MODEL_H
 
 #include <list>
 #include "ns3/object.h"
