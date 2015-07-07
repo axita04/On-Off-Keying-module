@@ -6,7 +6,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/on-off-keying-module-helper.h"
 #include "ns3/applications-module.h"
-#include "ns3/Aerror-model.h"
+#include "ns3/OOK-error-model.h"
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/packet-sink.h"
 #include "ns3/gnuplot.h"
@@ -184,8 +184,8 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   Ptr<MobilityModel> model = object->GetObject<MobilityModel>();
   std::cout << model->GetPosition() << std::endl;
 */
-  AErrorModel *em2 ;///
-  AErrorModel x;    //All this does is just instantiate an Error Model that we later install on the netdevice
+  OOKErrorModel *em2 ;///
+  OOKErrorModel x;    //All this does is just instantiate an Error Model that we later install on the netdevice
   em2 = &x;         //
 
   //Sets the initial conditions of the transmitter and receiver in the VLC network
@@ -209,8 +209,8 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2)); // putting the error model on the netdevice
 
    //The following code is similar because the same error model is put on the other netdevice inorder to move the channel more towards a duplex VLC link
-   AErrorModel *em3 ;
-  AErrorModel y;
+   OOKErrorModel *em3 ;
+  OOKErrorModel y;
   em3 = &y;
 
   VLCPropagationLossModel VPLM2;
@@ -274,7 +274,7 @@ std::ostringstream os;
 os << "txPower" << 48.573 <<"dbm";
 dataSet.SetTitle(os.str());
 plot.AddDataset(dataSet);
-GnuplotCollection gnuplots("AErrorModel-UDP.pdf");
+GnuplotCollection gnuplots("OOKErrorModel-UDP.pdf");
 {
 gnuplots.AddPlot(plot);
 }
