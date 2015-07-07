@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include "ns3/Aerror-model.h"
+#include "ns3/OOK-error-model.h"
 #include "ns3/packet.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
@@ -27,12 +27,12 @@ namespace ns3 {
 
 
 //
-// AErrorModel
+// OOKErrorModel
 //
-NS_LOG_COMPONENT_DEFINE("AErrorModel");
+NS_LOG_COMPONENT_DEFINE("OOKErrorModel");
 
 
-NS_OBJECT_ENSURE_REGISTERED (AErrorModel);
+NS_OBJECT_ENSURE_REGISTERED (OOKErrorModel);
 
 
 double V_lambda[] = { 
@@ -52,28 +52,28 @@ double Response[] = {
 
 
 //Constructor
-AErrorModel::AErrorModel ()
+OOKErrorModel::OOKErrorModel ()
 {
   NS_LOG_FUNCTION (this);
   srand(time(NULL));  //Seeds Random Number Generator
 }
 
-AErrorModel::~AErrorModel () 
+OOKErrorModel::~OOKErrorModel () 
 {
   NS_LOG_FUNCTION (this);
 }
 /*
-TypeId AErrorModel::GetTypeId (void)
+TypeId OOKErrorModel::GetTypeId (void)
 { 
-  static TypeId tid = TypeId ("ns3::AErrorModel")
+  static TypeId tid = TypeId ("ns3::OOKErrorModel")
 
     .SetGroupName("Network")
-    .AddConstructor<AErrorModel> ()  
+    .AddConstructor<OOKErrorModel> ()  
      ;
   return tid;
 }
 */
-double AErrorModel::SpectralRadiance( int wavelength, double temperature){
+double OOKErrorModel::SpectralRadiance( int wavelength, double temperature){
         double spectral_rad;
         double h = 6.62606957e-34; //Planck's constant
         double c = 299792458;      //speed of light
@@ -83,7 +83,7 @@ double AErrorModel::SpectralRadiance( int wavelength, double temperature){
 }
 
 //Definite integral of the Luminosity Function(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
-double AErrorModel::integralLum(){
+double OOKErrorModel::integralLum(){
         double integral = 0;
         int waveLower = wavelength_lower;
         int waveUpper = wavelength_upper;
@@ -99,7 +99,7 @@ double AErrorModel::integralLum(){
 
 
 //Definite integral of the Spectral Radiance(wavelength, temperature) d(wavelength)
-double AErrorModel::integralPlanck(){
+double OOKErrorModel::integralPlanck(){
         double integral = 0;
         int waveLower = wavelength_lower;
         int waveUpper = wavelength_upper;       
@@ -114,7 +114,7 @@ double AErrorModel::integralPlanck(){
 }
 
 //Definite integral of the Response(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
-double AErrorModel::integralRes(){
+double OOKErrorModel::integralRes(){
         double integral = 0;
         int waveLower = wavelength_lower;
         int waveUpper = wavelength_upper;
@@ -127,21 +127,21 @@ double AErrorModel::integralRes(){
         return integral;
 }
 
-double AErrorModel::getWavelengthUpper()
+double OOKErrorModel::getWavelengthUpper()
 {
   return wavelength_lower;
 }
-double AErrorModel::getWavelengthLower()
+double OOKErrorModel::getWavelengthLower()
 {
   return wavelength_upper;
 }
-double AErrorModel::getTemperature()
+double OOKErrorModel::getTemperature()
 {
   return temp;
 }
 
 // Virtual method from Error Model.  Determinds what packets to be dropped.
-bool AErrorModel::DoCorrupt(Ptr<Packet> p){
+bool OOKErrorModel::DoCorrupt(Ptr<Packet> p){
 	NS_LOG_FUNCTION(this << p);
 	
 	BER = calculateBER();
@@ -152,13 +152,13 @@ bool AErrorModel::DoCorrupt(Ptr<Packet> p){
 	double rnd  = (double) rand()/(double)(RAND_MAX);
         return (rnd < per);
 }
-void AErrorModel::DoReset(void){
+void OOKErrorModel::DoReset(void){
 
 
 }
 
 //Calculates BER from SNR
-double AErrorModel::calculateBER (){
+double OOKErrorModel::calculateBER (){
 //SNR calculation
 SNR = (std::pow((Rx*res),2)/No);
 double BER;
@@ -174,7 +174,7 @@ return BER;
 }
 //Set Noise power
 
-void AErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+void OOKErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
        wavelength_lower = lower;
        wavelength_upper = upper;
         temp = T;
@@ -205,20 +205,20 @@ void AErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B i
 	No = shot_var + thermal_var;
 }
 //Set Rx Power
-void AErrorModel::setRx (double x){
+void OOKErrorModel::setRx (double x){
 Rx = x;
 }
 
 //Gets Noise power
-double AErrorModel::getNo(void){
+double OOKErrorModel::getNo(void){
 return No;
 }
 //Gets BER
-double AErrorModel::getBER(void){
+double OOKErrorModel::getBER(void){
 return BER;
 }
 //Gets SNR
-double AErrorModel::getSNR(void){
+double OOKErrorModel::getSNR(void){
 return SNR;
 }
 
