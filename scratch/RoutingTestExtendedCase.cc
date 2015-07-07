@@ -13,7 +13,7 @@
 #include "ns3/netanim-module.h"
 #include "ns3/on-off-keying-module-helper.h"
 #include "ns3/applications-module.h"
-#include "ns3/Aerror-model.h"
+#include "ns3/OOK-error-model.h"
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/packet-sink.h"
 #include "ns3/gnuplot.h"
@@ -194,8 +194,8 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   a ->SetElevation(0.0);
   b ->SetElevation(0.0);
 
-  AErrorModel *em2 ;
-  AErrorModel x;
+  OOKErrorModel *em2 ;
+  OOKErrorModel x;
   em2 = &x;
 
   VLCPropagationLossModel VPLM;
