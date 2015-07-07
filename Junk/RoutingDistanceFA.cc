@@ -121,8 +121,8 @@ NetDeviceContainer ndAp_Relay = p2p.Install(wifiAp, relayAp);
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
 
-  em2->setNo(380,380,5000,100e6,VPLM.GetPhotoDetectorArea());
   em2->setRx(VPLM.GetRxPower(a,b));
+  em2->setNo(380,380,5000,100e6,VPLM.GetPhotoDetectorArea());
 
   ndRelayAp_RelayMt2.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
   ndRelayAp_RelayMt2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
