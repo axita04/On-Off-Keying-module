@@ -197,10 +197,9 @@ mobility.SetMobilityModel("ns3::VlcMobilityModel" , "Azimuth", DoubleValue(0.0) 
   VPLM.SetConcentratorGain(70,1.5);
 
   //Also initial conditions, but these are made in the error model since thats where the values are used to calculate BER
-  em2->setRes(0.28);
-  em2->setNo(1.0e-11);
-  em2->setRb(1.0e6);
+  em2->setNo(380,380,5000,100e6,VLPM.GetPhotoDetectorArea());
   em2->setRx(VPLM.GetRxPower(a,b));
+
 
   
 
