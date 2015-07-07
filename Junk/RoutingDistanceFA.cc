@@ -257,7 +257,7 @@ double throughput = ((Received.back()*8))/ theTime.back();
 //std::cout<<"THROUGHPUT : " << throughput << std::endl;
 //std::cout<<"BER : " << em2->getBER() << std::endl;
 TCPXfile <<dist << " " << throughput << std::endl;
-TCPXfile << "FUCK TITS: " << em2->getBER() << std::endl;
+TCPXfile << "BER: " << em2->getBER() << std::endl;
 Received.clear();
 
 Simulator::Destroy();
