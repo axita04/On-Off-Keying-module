@@ -18,12 +18,12 @@ class Packet;
 //
 //AErrorModel
 //
-class AErrorModel : public ErrorModel
+class OOKErrorModel : public ErrorModel
 {
 public:
 
-  AErrorModel ();
-   ~AErrorModel ();
+  OOKErrorModel ();
+   ~OOKErrorModel ();
 
   /**
    * \brief Get the type ID.
