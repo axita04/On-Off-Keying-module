@@ -35,10 +35,12 @@ public:
   double No;   // Noise power in A^2
   double Rx;   // Received Power in dbm
   double BER;  // Bit Error Rate
-  double Rb;   // Data Rate
-  double Res;   //Responsitivity of Receiver
-  double Tb;   // 1 / data rate
+  double res;  //Responsitivity of Receiver
   double SNR;  //Signal to noise ratio
+  int wavelength_lower; //Lower bound WaveLength
+  int wavelength_upper; //Upper bound Wavelength
+  double temp;  // Blackbody temp of LED
+
 
   double calculateBER ();
 
@@ -52,23 +54,15 @@ public:
 
   double integralRes();
 
-  void setWavelengths(int lower, int upper);
-
-  void setTemperature(int T);
-
   double getWavelengthUpper();
 
   double getWavelengthLower();
 
   double getTemperature();
 
-  void setNo (double n, double a);
+  void setNo (int lower, int upper, int T ,double n, double a);
 
   void setRx (double x);
-
-  void setRb (double b);
-
-  void setRes (double r);
 
   double getEb(void);
 
