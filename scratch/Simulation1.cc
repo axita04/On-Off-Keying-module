@@ -323,10 +323,9 @@ NodeContainer nodes;
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
 
-  em2->setRes(responsivity);
-  em2->setNo(1.0e-11);
-  em2->setRb(1.0e6);
+  em2->setNo(380,380,5000,100e6,VLPM.GetPhotoDetectorArea());
   em2->setRx(VPLM.GetRxPower(a,b));
+
 
   Illumination illum;
   illum.setEfficacy(luminous_efficacy);
