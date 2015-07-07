@@ -191,7 +191,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   b -> SetPosition (Vector (0.0,0.0,0.0));
   a ->SetAzimuth(0.0);
   b ->SetAzimuth(0.0);
-  a ->SetElevation(0.0);
+  a ->SetElevation(180.0);
   b ->SetElevation(0.0);
 
   OOKErrorModel *em2 ;
@@ -205,7 +205,7 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   VPLM.SetPhotoDetectorArea(1.0e-4);
   VPLM.SetConcentratorGain(70,1.5);
   em2->setNo(380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea());
-  
+  std::cout << "RX : " << VPLM.GetRxPower(a,b) << std::endl;
   em2->setRx(VPLM.GetRxPower(a,b));
 
   ndRouterAp_RelayMt1.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
