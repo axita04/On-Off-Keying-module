@@ -22,7 +22,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/on-off-keying-module-helper.h"
 #include "ns3/applications-module.h"
-#include "ns3/Aerror-model.h"
+#include "ns3/OOK-error-model.h"
 #include "ns3/vlc-propagation-loss-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/constant-velocity-mobility-model.h"
@@ -312,8 +312,8 @@ NodeContainer nodes;
   b -> SetAzimuth (0 * M_PI / 180);      // azimuth 0 means that it points at the positive x direction
   b -> SetElevation(0 * M_PI / 180);     //receiver points straight up at 0 degree elevation
 
-  AErrorModel *em2 ;
-  AErrorModel x;
+  OOKErrorModel *em2 ;
+  OOKErrorModel x;
   em2 = &x;
 
   VLCPropagationLossModel VPLM;
