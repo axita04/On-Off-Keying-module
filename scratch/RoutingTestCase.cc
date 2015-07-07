@@ -129,11 +129,9 @@ NetDeviceContainer ndAp_Relay = p2p.Install(wifiAp, relayAp);
 
   //Also initial conditions, but these are made in the error model since thats where the values are used to calculate BER
   //em2->setRes(0.28);
-  em2->setNo(100e6);    //Noise bandwidth at 100Mbps
-  em2->setRb(1.0e6);
-  em2->setWavelengths(380,380);
-  em2->setTemperature(5000);
+  em2->setNo(380,380,5000,100e6,VLPM.GetPhotoDetectorArea());
   em2->setRx(VPLM.GetRxPower(a,b));
+
 
   ndRelayAp_RelayMt2.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2)); // putting the error model on the netdevice
 
