@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <string>
 #include <cassert>
 
@@ -74,12 +75,10 @@ TxEnd (Ptr<const Packet> p)//also used as a trace and for calculating throughput
 
 int main (int argc, char *argv[])
 {
-Gnuplot plot; // plot object for data
+std::ofstream myfile;
+myfile.open("BER.dat");
 
-Gnuplot2dDataset dataSet; //object for aloowing us to add a new dataset after a simulation
-dataSet.SetStyle(Gnuplot2dDataset::LINES);
-
-  for(double dist = 0 ; dist < 20 ; dist+=.5){ //loops the simulation by increasing distance between nodes
+  for(double dist = 12.5 ; dist < 14 ; dist+=.001){ //loops the simulation by increasing distance between nodes
 
 //creating each node object
 Ptr<Node> wifiAp = CreateObject<Node>();
@@ -263,30 +262,23 @@ Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket1, dstaddr, dstport);
 Simulator::Run();
 
 double throughput = ((Received.back()*8))/ theTime.back();//throughput calculation
-std::cout<<"-------------------------"<< std::endl;
-std::cout<<"Received : " << Received.back() << std::endl;
-std::cout<<"Distance : " << dist << std::endl;
+//std::cout<<"-------------------------"<< std::endl;
+//std::cout<<"Received : " << Received.back() << std::endl;
+//std::cout<<"Distance : " << dist << std::endl;
 //std::cout<<"Time : " << theTime.back() << std::endl;
-std::cout<<"THROUGHPUT : " << throughput << std::endl;
-std::cout<<"SER : " << em2->getSER() << std::endl;
+//std::cout<<"THROUGHPUT : " << throughput << std::endl;
+//std::cout<<"SER : " << em2->getSER() << std::endl;
 
-dataSet.Add(dist, throughput); // adds a unique point to a data set that represents one simulation
+
+
+myfile << dist << " " << em2->getSER()*2 << std::endl;
+
 Received.clear(); // clears the data received vector so as to avoid calculation errors from old and irrelevant values
 
 Simulator::Destroy();
 
 
   }
-//Gnuplot stuff
-std::ostringstream os;
-os << "txPower" << 48.573 <<"dbm";
-dataSet.SetTitle(os.str());
-plot.AddDataset(dataSet);
-GnuplotCollection gnuplots("RoutingTestCase.pdf");
-{
-gnuplots.AddPlot(plot);
-}
-gnuplots.GenerateOutput(std::cout);
 
 
 return 0;
