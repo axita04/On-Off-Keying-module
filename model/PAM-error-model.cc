@@ -147,7 +147,8 @@ bool PAMErrorModel::DoCorrupt(Ptr<Packet> p){
 	SER = calculateSER();
 	//Caculated the Packet Error Rate by finding the complement of the probablility 
 	//that a packets is not corrupted
-	double per = 1.0 - (double)std::pow((double)(1.0 - SER), static_cast<double>((8*p->GetSize())/M));
+        double num = log2(M);
+	double per = 1.0 - (double)std::pow((double)(1.0 - SER), static_cast<double>((8*p->GetSize())/num));
         //Randomizies a number and if its less than the PER the packet is rejected
 	double rnd  = (double) rand()/(double)(RAND_MAX);
         return (rnd < per);
