@@ -165,7 +165,7 @@ SNR = (std::pow((Rx*res),2)/No);
 double ser;
 if(SNR > 0){
 //BER calculation
-ser = (2*(M-1)/M)* erfc((std::sqrt(SNR))/(M-1));
+ser = (2*(M-1)/M)* 0.5 *erfc((std::sqrt(SNR)/std::sqrt(2))/(M-1));
 //std::cout<<"SER : " << ser << std::endl;
 }else{
 ser = 1;
