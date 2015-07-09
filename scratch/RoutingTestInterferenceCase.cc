@@ -110,14 +110,14 @@ TxEnd2 (Ptr<const Packet> p)
 int main (int argc, char *argv[])
 {
 std::ofstream myfile1;
-myfile1.open("2IntTest.dat");
+myfile1.open("2IntTestBER.dat");
 
-//std::ofstream myfile2;
-//myfile2.open("node2.dat");
+std::ofstream myfile2;
+myfile2.open("2IntTestSNR.dat");
 
 
-//std::ofstream myfile;
-//myfile.open("total.dat");
+std::ofstream myfile3;
+myfile3.open("2IntTestINR.dat");
 
 
   for(double dist = 5 ; dist < 6.5 ; dist+=.001){
@@ -401,10 +401,12 @@ std::cout<<"Distance : " << dist << std::endl;
 //std::cout<<"Time : " << theTimeT.back() << std::endl;
 //std::cout<<"THROUGHPUT : " << totalThroughput << std::endl;
 std::cout<<"BER : " << em2->getBER() << std::endl;
+std::cout<<"INR : " << em2->getINR() << std::endl;
+std::cout<<"SNR : " << em2->getSNR() << std::endl;
 
-//myfile <<dist << " " << totalThroughput <<std::endl;
+myfile3 <<dist << " " << em2->getINR() <<std::endl;
 myfile1 <<dist << " " << em2->getBER() <<std::endl;
-//myfile2 <<dist << " " << throughput2 <<std::endl;
+myfile2 <<dist << " " << em2->getSNR() <<std::endl;
 
 
 
@@ -419,9 +421,9 @@ Simulator::Destroy();
 }
  
 
-//myfile.close();
-//myfile1.close();
-//myfile2.close();
+myfile3.close();
+myfile1.close();
+myfile2.close();
 
 
 return 0;
