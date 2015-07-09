@@ -201,11 +201,11 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   VPLM2.SetConcentratorGain(70,1.5);
 
 
-  em2->setNo(VPLM.GetRxPower(a,b),380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea());
+  em2->setNo(380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(),VPLM.GetRxPower(a,b));
 //std::cout << "INTRx : " << VPLM.GetRxPower(d,b) << std::endl;
-  em2->setIntNo(VPLM.GetRxPower(d,b), 380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea());
+  em2->setIntNo( 380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(), VPLM.GetRxPower(d,b));
 
-  em3->setNo(VPLM.GetRxPower(d,e),380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea());
+  em3->setNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea(),VPLM.GetRxPower(d,e));
 
 
   ndRouterAp_RelayMt1.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
