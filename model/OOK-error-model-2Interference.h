@@ -62,9 +62,9 @@ static double Response[] ;
 
   double getTemperature();
 
-  void setNo (double rx, int lower, int upper, int T ,double n, double a);
+  void setNo (int lower, int upper, int T ,double n, double a, double rx);
 
-   void setIntNo (double rx, int lower, int upper, int T ,double n, double a);
+   void setIntNo (int lower, int upper, int T ,double n, double a , double rx);
 
   double getEb(void);
 
