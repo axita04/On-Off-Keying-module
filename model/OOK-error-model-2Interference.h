@@ -73,6 +73,7 @@ static double Response[] ;
   double getNo(void);
 
   double getSNR(void);
+  double getINR(void);
    
 private:
 
