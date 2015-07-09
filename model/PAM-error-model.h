@@ -60,9 +60,7 @@ public:
 
   double getTemperature();
 
-  void setNo (int lower, int upper, int T ,double n, double a);
-
-  void setRx (double x);
+  void setNo (int lower, int upper, int T ,double n, double a , double rx);
   
   void setM (double m);
 
