@@ -176,11 +176,11 @@ return ser;
 }
 //Set Noise power
 
-void PAMErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+void PAMErrorModel::setNo (int lower, int upper, int T ,double B, double A, double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
        wavelength_lower = lower;
        wavelength_upper = upper;
         temp = T;
-
+       Rx = rx;
        res = integralRes()/integralPlanck();
        
    
@@ -203,10 +203,6 @@ void PAMErrorModel::setNo (int lower, int upper, int T ,double B, double A){	//B
 	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
 	
 	No = shot_var + thermal_var;
-}
-//Set Rx Power
-void PAMErrorModel::setRx (double x){
-Rx = x;
 }
 
 //Gets Noise power
