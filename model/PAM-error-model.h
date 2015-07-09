@@ -21,7 +21,7 @@ class Packet;
 class PAMErrorModel : public ErrorModel
 {
 public:
-
+//Constructor and Deconstructor
   PAMErrorModel ();
    ~PAMErrorModel ();
 
@@ -42,17 +42,14 @@ public:
   double temp;  // Blackbody temp of LED
   double M; //Size of Symbol
 
-  double calculateSER ();
+  double calculateSER (); //Calculates SER
 
-  void calculateEb();
-
+//Used to calculate Responsitivty and Lumanince. 
   double SpectralRadiance(int wavelength, double temperature);
-
   double integralLum();
-
   double integralPlanck();
-
   double integralRes();
+
 
   double getWavelengthUpper();
 
@@ -60,30 +57,28 @@ public:
 
   double getTemperature();
 
-  void setNo (int lower, int upper, int T ,double n, double a , double rx);
+  void setNo (int lower, int upper, int T ,double n, double a , double rx);// Sets Noise and Received Power
   
-  void setM (double m);
+  void setM (double m); //Sets the size of Symbol
 
-  double getEb(void);
-
-  double getSER(void);
+  double getSER(void); //Returns Symbol Error Rate 
   
-  double getNo(void);
+  double getNo(void); //Returns Noise power
 
-  double getSNR(void);
+  double getSNR(void); // Return Signal to Noise Ratio
    
 private:
 
-virtual bool DoCorrupt(Ptr<Packet> p);
+virtual bool DoCorrupt(Ptr<Packet> p); //Virtual method called by simulator to determind when a packets drops/ is corrupted
 
-virtual void DoReset(void);
-
-
-double m_rate;
+virtual void DoReset(void); //Virtual method does nothing
 
 
+double m_rate;//Not used
 
-Ptr<RandomVariableStream> m_ranvar;
+
+
+Ptr<RandomVariableStream> m_ranvar; //Not used
   
 };
 
