@@ -1,471 +1,252 @@
-#include <iostream>
-#include <fstream>
-#include <ostream>
-#include <string>
-#include <cassert>
 
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
-#include "ns3/netanim-module.h"
-#include "ns3/on-off-keying-module-helper.h"
-#include "ns3/applications-module.h"
-#include "ns3/OOK-error-model.h"
-#include "ns3/OOK-error-model-2Interference.h"
-#include "ns3/vlc-propagation-loss-model.h"
-#include "ns3/packet-sink.h"
-#include "ns3/gnuplot.h"
-#include "ns3/double.h"
-#include "ns3/mobility-module.h"
-#include "ns3/VLC-Mobility-Model.h"
-#include "ns3/wifi-module.h"
-#include <vector>
+/* 
+ *
+ * Author: Ryan Ackerman   <rea9@njit.edu>
+ *         
+ *         
+*/
+
 #include <cmath>
 
-using namespace ns3;
+#include "ns3/OOK-error-model-2Interference.h"
+#include "ns3/packet.h"
+#include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/boolean.h"
+#include "ns3/enum.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
+#include "ns3/traced-value.h"
+#include "ns3/trace-source-accessor.h"
+#include <time.h>
+#include <stdlib.h>
 
-NS_LOG_COMPONENT_DEFINE("RoutingTestCase");
-static const uint32_t totalTxBytes = 1;
-static uint32_t currentTxBytes = 0;
-static const uint32_t writeSize = 1040;
-uint8_t data[writeSize];
-void StartFlow (Ptr<Socket>, Ipv4Address, uint16_t);
-void WriteUntilBufferFull (Ptr<Socket>, uint32_t);
+
+namespace ns3 {
 
 
-void SendStuff(Ptr<Socket> sock, Ipv4Address dstaddr, uint16_t port);
-void BindSock(Ptr<Socket> sock, Ptr<NetDevice> netdev);
-void srcSocketRecv(Ptr<Socket> Socket);
-void dstSocketRecv(Ptr<Socket> Socket);
-/*
-static void
-Trace (Ptr<const Packet> p)
+//
+// OOKErrorModel
+//
+NS_LOG_COMPONENT_DEFINE("OOK2IntErrorModel");
+
+
+NS_OBJECT_ENSURE_REGISTERED (OOK2IntErrorModel);
+
+
+double OOK2IntErrorModel::V_lambda[] = {
+0.000039, 0.000120, 0.000396, 0.001210, 0.004000, 0.011600, 0.023000, 
+0.038000, 0.060000, 0.090980, 0.139020, 0.208020, 0.323000,  0.503000, 
+0.710000, 0.862000, 0.954000, 0.994950,  0.995000, 0.952000, 0.870000, 
+0.757000, 0.631000, 0.503000, 0.381000, 0.265000, 0.175000, 0.107000, 
+0.061000, 0.032000, 0.017000, 0.008210, 0.004102, 0.002091, 0.001047, 
+0.000520, 0.000249, 0.000120, 0.000060, 0.000030 };
+
+double OOK2IntErrorModel::Response[] = { 
+0.150, 0.160, 0.170, 0.190, 0.200, 0.220, 0.230, 0.240, 0.250, 0.260, 
+0.270, 0.280, 0.300, 0.320, 0.330, 0.350, 0.360, 0.370, 0.375, 0.380, 
+0.390, 0.400, 0.415, 0.420, 0.430, 0.440, 0.450, 0.460, 0.470, 0.475,
+0.480, 0.485, 0.490, 0.495, 0.500, 0.505, 0.510, 0.520, 0.526, 0.532 };
+
+//Constructor
+OOK2IntErrorModel::OOK2IntErrorModel ()
 {
-  NS_LOG_UNCOND ("Sent Mt");
-}
-*/
-Ptr<PacketSink> sink1;
-Ptr<PacketSink> sink2;
-std::vector<double> Received (1,0);
-std::vector<double> Received2 (1,0);
-std::vector<double> ReceivedT (1,0);
-std::vector<double> theTime (1,0);
-std::vector<double> theTime2 (1,0);
-std::vector<double> theTimeT (1,0);
-
-static void
-RxEnd (Ptr<const Packet> p)
-{
-  Received.push_back(Received.back() + p->GetSize());
-  theTime.push_back(Simulator::Now().GetSeconds());
-
-
-   ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
-//  NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
-}
-
-static void
-TxEnd (Ptr<const Packet> p)
-{
- //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
-  Received.push_back(Received.back() + p->GetSize());
-  theTime.push_back(Simulator::Now().GetSeconds());
- 
-     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
-   
+  NS_LOG_FUNCTION (this);
+  srand(time(NULL));  //Seeds Random Number Generator
 }
 
-static void
-RxEnd2 (Ptr<const Packet> p)
+OOK2IntErrorModel::~OOK2IntErrorModel () 
 {
-
-  Received2.push_back(Received2.back() + p->GetSize());
-  theTime2.push_back(Simulator::Now().GetSeconds());
-
-     ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
-
-  //NS_LOG_UNCOND ("Received : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
+  NS_LOG_FUNCTION (this);
 }
 
-static void
-TxEnd2 (Ptr<const Packet> p)
-{
- //NS_LOG_UNCOND ("Sent : "<< p->GetSize() << " Bytes at " << Simulator::Now ().GetSeconds () <<"s" );
-  Received2.push_back(Received2.back() + p->GetSize());
-  theTime2.push_back(Simulator::Now().GetSeconds());
- 
+TypeId OOK2IntErrorModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("ns3::OOK2IntErrorModel")
 
-      ReceivedT.push_back(ReceivedT.back() + p->GetSize());
-  theTimeT.push_back(Simulator::Now().GetSeconds());
+    .SetGroupName("Network")
+    .AddConstructor<OOK2IntErrorModel> ()  
+     ;
+  return tid;
 }
 
-
-
-int main (int argc, char *argv[])
-{
-std::ofstream myfile1;
-myfile1.open("2IntTestBER.dat");
-
-std::ofstream myfile2;
-myfile2.open("2IntTestSNR.dat");
-
-
-std::ofstream myfile3;
-myfile3.open("2IntTestINR.dat");
-
-
-  for(double dist = 5 ; dist < 6.5 ; dist+=.001){
-
-Ptr<Node> Ap = CreateObject<Node>();
-Ptr<Node> RouterAp = CreateObject<Node>();
-Ptr<Node> relay1 = CreateObject<Node>();
-Ptr<Node> Mt1 = CreateObject<Node>();
-Ptr<Node> relay2 = CreateObject<Node>();
-Ptr<Node> Mt2 = CreateObject<Node>();
-
-
-NodeContainer c = NodeContainer(Ap,RouterAp);
-c.Add(relay1);
-c.Add(Mt1);
-c.Add(relay2);
-c.Add(Mt2);
-
-
-InternetStackHelper internet;
-internet.Install(c);
-
-PointToPointHelper p2p;
-p2p.SetDeviceAttribute("DataRate", StringValue("200Mbps"));
-p2p.SetChannelAttribute("Delay", StringValue("2ms"));
-NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
-//VLC---------------------------------------------------------
- OOKHelper OOK;
-  OOK.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  OOK.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  
-  NetDeviceContainer ndRouterAp_RelayMt1 = OOK.Install(RouterAp, relay1);
-  NetDeviceContainer ndRouterAp_RelayMt2 = OOK.Install(RouterAp, relay2);
-
-
-  Ptr<VlcMobilityModel> a = CreateObject<VlcMobilityModel> ();
-  Ptr<VlcMobilityModel> b = CreateObject<VlcMobilityModel> ();  
-
-
-  a -> SetPosition (Vector (0.0,0.0,6.0));
-  b -> SetPosition (Vector (0.0,0.0,0.0));
-  a ->SetAzimuth(0.0);
-  b ->SetAzimuth(0.0);
-  a ->SetElevation(180.0);
-  b ->SetElevation(0.0);
-
-  Ptr<VlcMobilityModel> d = CreateObject<VlcMobilityModel> ();
-  Ptr<VlcMobilityModel> e = CreateObject<VlcMobilityModel> ();  
-
-  d -> SetPosition (Vector (0.0,0.0,dist));
-  e -> SetPosition (Vector (0.0,0.0,0.0));
-  d ->SetAzimuth(0.0);
-  e ->SetAzimuth(0.0);
-  d ->SetElevation(180.0);
-  e ->SetElevation(0.0);
-
-
-  OOK2IntErrorModel *em2 ;
-  OOK2IntErrorModel x;
-  em2 = &x;
-
-  VLCPropagationLossModel VPLM;
-  VPLM.SetTxPower(48.573);
-  VPLM.SetLambertianOrder(70);
-  VPLM.SetFilterGain(1);
-  VPLM.SetPhotoDetectorArea(1.0e-4);
-  VPLM.SetConcentratorGain(70,1.5);
-
-
-  
- 
-  OOKErrorModel *em3 ;
-  OOKErrorModel y;
-  em3 = &y;
-
-  VLCPropagationLossModel VPLM2;
-  VPLM2.SetTxPower(48.573);
-  VPLM2.SetLambertianOrder(70);
-  VPLM2.SetFilterGain(1);
-  VPLM2.SetPhotoDetectorArea(1.0e-4);
-  VPLM2.SetConcentratorGain(70,1.5);
-
-
-  em2->setNo(380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(),VPLM.GetRxPower(a,b));
-//std::cout << "INTRx : " << VPLM.GetRxPower(d,b) << std::endl;
-  em2->setIntNo( 380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(), VPLM.GetRxPower(d,b));
-
-  em3->setNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea(),VPLM.GetRxPower(d,e));
-
-
-  ndRouterAp_RelayMt1.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
-  ndRouterAp_RelayMt1.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
-
-  ndRouterAp_RelayMt2.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
-  ndRouterAp_RelayMt2.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
-
-
-  
-
-//------------------------------------------------------------
-//Wifi--------------------------------------------------------
- std::string phyMode ("DsssRate11Mbps");
-  double rss = -80;  // -dBm
-
-NodeContainer cont = NodeContainer(RouterAp, relay1);
-cont.Add(relay2);
-
-  // The below set of helpers will help us to put together the wifi NICs we want
-  WifiHelper wifi;
- 
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  // This is one parameter that matters when using FixedRssLossModel
-  // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (0) ); 
-  // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
-
-  YansWifiChannelHelper wifiChannel;
-  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  // The below FixedRssLossModel will cause the rss to be fixed regardless
-  // of the distance between the two stations, and the transmit power
-  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
-  wifiPhy.SetChannel (wifiChannel.Create ());
-
-  // Add a non-QoS upper mac, and disable rate control
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue (phyMode),
-                                "ControlMode",StringValue (phyMode));
-  // Set it to adhoc mode
-  wifiMac.SetType ("ns3::AdhocWifiMac");
-  NetDeviceContainer ndRelayMt_RouterAp = wifi.Install (wifiPhy, wifiMac, cont);
-
-  // Note that with FixedRssLossModel, the positions below are not 
-  // used for received signal strength. 
-  MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
-  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
-  mobility.SetPositionAllocator (positionAlloc);
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (cont);  
-
-//NetDeviceContainer ndRelayAp_RelayMt3 = p2p.Install(relayMt,relayAp);
-//-------------------------------------------------------------
-NetDeviceContainer ndRelay_Mt1 = p2p.Install(relay1, Mt1);
-NetDeviceContainer ndRelay_Mt2 = p2p.Install(relay2, Mt2);
-
-
-
-
-Ipv4AddressHelper ipv4;
-ipv4.SetBase("10.1.1.0", "255.255.255.0");
-Ipv4InterfaceContainer iAp = ipv4.Assign(ndAp_Router);
-
-ipv4.SetBase("10.1.2.0", "255.255.255.0");
-Ipv4InterfaceContainer iRelayApMt1 = ipv4.Assign(ndRouterAp_RelayMt1);
-
-ipv4.SetBase("10.1.3.0", "255.255.255.0");
-Ipv4InterfaceContainer iRelayApMt2 = ipv4.Assign(ndRouterAp_RelayMt2);
-
-
-ipv4.SetBase("10.1.5.0", "255.255.255.0");
-Ipv4InterfaceContainer iwifi = ipv4.Assign(ndRelayMt_RouterAp);
-
-ipv4.SetBase("10.1.6.0", "255.255.255.0");
-Ipv4InterfaceContainer iMt1 = ipv4.Assign(ndRelay_Mt1);
-
-ipv4.SetBase("10.1.7.0", "255.255.255.0");
-Ipv4InterfaceContainer iMt2 = ipv4.Assign(ndRelay_Mt2);
-
-
-
-Ptr<Ipv4> ipv4Ap = Ap->GetObject<Ipv4>();
-Ptr<Ipv4> ipv4RouterAp = RouterAp->GetObject<Ipv4>();
-Ptr<Ipv4> ipv4RelayMt1 = relay1->GetObject<Ipv4>();
-Ptr<Ipv4> ipv4RelayMt2 = relay2->GetObject<Ipv4>();
-
-Ptr<Ipv4> ipv4Mt1 = Mt1->GetObject<Ipv4>();
-Ptr<Ipv4> ipv4Mt2 = Mt2->GetObject<Ipv4>();
-
-
-Ipv4StaticRoutingHelper ipv4RoutingHelper;
-
-Ptr<Ipv4StaticRouting> staticRoutingAp = ipv4RoutingHelper.GetStaticRouting(ipv4Ap);
-Ptr<Ipv4StaticRouting> staticRoutingRouterAp = ipv4RoutingHelper.GetStaticRouting(ipv4RouterAp);
-Ptr<Ipv4StaticRouting> staticRoutingRelayMt1 = ipv4RoutingHelper.GetStaticRouting(ipv4RelayMt1);
-Ptr<Ipv4StaticRouting> staticRoutingRelayMt2 = ipv4RoutingHelper.GetStaticRouting(ipv4RelayMt2);
-
-Ptr<Ipv4StaticRouting> staticRoutingMt1 = ipv4RoutingHelper.GetStaticRouting(ipv4Mt1);
-Ptr<Ipv4StaticRouting> staticRoutingMt2 = ipv4RoutingHelper.GetStaticRouting(ipv4Mt2);
-
-
-
-
-staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.1.2"), 1,3);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.2.2"), 2,2);
-staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.6.2"), Ipv4Address("10.1.6.2"), 3,1);
-
-staticRoutingAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.1.2"), 1,3);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.3.2"), 3,2);
-staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.7.2"), Ipv4Address("10.1.7.2"), 3,1);
-
-
-
-staticRoutingMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.6.1"), 1,3);
-staticRoutingRelayMt1->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,2);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
-
-staticRoutingMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.7.1"), 1,3);
-staticRoutingRelayMt2->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.5.1"), 2,2);
-staticRoutingRouterAp->AddHostRouteTo(Ipv4Address("10.1.1.1"), Ipv4Address("10.1.1.1"), 1,1);
-
-;
-
- Ptr<Socket> srcSocket1 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
-  Ptr<Socket> srcSocket2 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
-  Ptr<Socket> srcSocket3 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
-  Ptr<Socket> srcSocket4 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
- Ptr<Socket> srcSocket5 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
-  Ptr<Socket> srcSocket6 = Socket::CreateSocket (Ap, TypeId::LookupByName ("ns3::TcpSocketFactory"));
-
-
-  uint16_t dstport1 = 12345;
-  Ipv4Address dstaddr1 ("10.1.6.2");
-
-  PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dstport1));
-  ApplicationContainer apps = sink.Install (Mt1);
-  sink1 = DynamicCast<PacketSink>(apps.Get(0));
-  apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (10.0));
- 
- uint16_t dstport2 = 12346;
-  Ipv4Address dstaddr2 ("10.1.7.2");
-
-  PacketSinkHelper sinka ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dstport2));
-  ApplicationContainer apps2 = sinka.Install (Mt2);
-  sink2 = DynamicCast<PacketSink>(apps2.Get(0));
-  apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (10.0));
-
-
-AsciiTraceHelper ascii;
-p2p.EnableAsciiAll(ascii.CreateFileStream ("RoutingTestCase.tr"));
-p2p.EnablePcapAll("RoutingTestCase");
-
-LogComponentEnableAll(LOG_PREFIX_TIME);
-LogComponentEnable("RoutingTestCase", LOG_LEVEL_INFO);
-
-Ptr<OutputStreamWrapper> stream1 = Create<OutputStreamWrapper> ("Table3", std::ios::out);
-ipv4RoutingHelper.PrintRoutingTableAllAt(Seconds(2.0), stream1);
-
-
-
-
-
-ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd));
-
-ndRelay_Mt1.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd));
-
-ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyRxEnd", MakeCallback (&RxEnd2));
-
-ndRelay_Mt2.Get (1)->TraceConnectWithoutContext ("PhyTxEnd", MakeCallback (&TxEnd2));
-
-
-Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket2, dstaddr1, dstport1);
-
-//Simulator::Schedule(Seconds(0.1), &StartFlow,srcSocket3, dstaddr2, dstport2);
-
-Simulator::Run();
-
-//double throughput1 = ((Received.back()*8))/ theTime.back();
-//double throughput2 = ((Received2.back()*8))/ theTime2.back();
-//double totalThroughput = ((ReceivedT.back()*8))/ theTimeT.back();
-
-std::cout<<"-------------------------"<< std::endl;
-//std::cout<<"Received : " << ReceivedT.back() << std::endl;
-std::cout<<"Distance : " << dist << std::endl;
-//std::cout<<"Time : " << theTimeT.back() << std::endl;
-//std::cout<<"THROUGHPUT : " << totalThroughput << std::endl;
-std::cout<<"BER : " << em2->getBER() << std::endl;
-std::cout<<"INR : " << em2->getINR() << std::endl;
-std::cout<<"SNR : " << em2->getSNR() << std::endl;
-
-myfile3 <<dist << " " << em2->getINR() <<std::endl;
-myfile1 <<dist << " " << em2->getBER() <<std::endl;
-myfile2 <<dist << " " << em2->getSNR() <<std::endl;
-
-
-
-Received.clear();
-Received2.clear();
-ReceivedT.clear();
-
-
-
-Simulator::Destroy();
-
-}
- 
-
-myfile3.close();
-myfile1.close();
-myfile2.close();
-
-
-return 0;
+double OOK2IntErrorModel::SpectralRadiance( int wavelength, double temperature){
+        double spectral_rad;
+        double h = 6.62606957e-34; //Planck's constant
+        double c = 299792458;      //speed of light
+        double k = 1.3806488e-23;  //Boltzmann constant
+        double waveLength = wavelength * 1e-9; //nm
+        return spectral_rad = 15*((std::pow((h*c)/(M_PI*k*temperature), 4)))/((std::pow(waveLength, 5)) * ((std::exp((h*c)/(waveLength*k*temperature)))-1));
 }
 
-   
-void BindSock (Ptr<Socket> sock, Ptr<NetDevice> netdev)
-   {
-     sock->BindToNetDevice (netdev);
-     return;
-   }
-void StartFlow (Ptr<Socket> localSocket,
-                Ipv4Address servAddress,
-                uint16_t servPort)
-{
-  //NS_LOG_INFO ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
-  currentTxBytes = 0;
-  localSocket->Bind ();
-  localSocket->Connect (InetSocketAddress (servAddress, servPort)); //connect
+//Definite integral of the Luminosity Function(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
+double OOK2IntErrorModel::integralLum(int lower, int upper){
+        double integral = 0;
+        int waveLower = lower;
+        int waveUpper = upper;
 
-  // tell the tcp implementation to call WriteUntilBufferFull again
-  // if we blocked and new tx buffer space becomes available
-  localSocket->SetSendCallback (MakeCallback (&WriteUntilBufferFull));
-  WriteUntilBufferFull (localSocket, localSocket->GetTxAvailable ());
-}
-
-void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
-{
-  while (currentTxBytes < totalTxBytes && localSocket->GetTxAvailable () > 0)
-    {
-      uint32_t left = totalTxBytes - currentTxBytes;
-      uint32_t dataOffset = currentTxBytes % writeSize;
-      uint32_t toWrite = writeSize - dataOffset;
-      toWrite = std::min (toWrite, left);
-      toWrite = std::min (toWrite, localSocket->GetTxAvailable ());
-      int amountSent = localSocket->Send (&data[dataOffset], toWrite, 0);
-      if(amountSent < 0)
+        while(waveLower <= waveUpper)
         {
-          // we will be called again when new tx space becomes available.
-          return;
+                integral += V_lambda[(waveLower-380)/10] * SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
         }
-      currentTxBytes += amountSent;
-    }
-  localSocket->Close ();
+        
+        return integral;
 }
+
+
+//Definite integral of the Spectral Radiance(wavelength, temperature) d(wavelength)
+double OOK2IntErrorModel::integralPlanck(int lower, int upper){
+        double integral = 0;
+        int waveLower = lower;
+        int waveUpper = upper;       
+
+        while(waveLower <= waveUpper)
+        {
+                integral += SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
+        }
+        
+        return integral;
+}
+
+//Definite integral of the Response(wavelength)*Spectral Radiance(wavelength, temperature) d(wavelength)
+double OOK2IntErrorModel::integralRes(int lower, int upper){
+        double integral = 0;
+        int waveLower = lower;
+        int waveUpper = upper;
+        while(waveLower <= waveUpper)
+        {
+                integral += Response[(waveLower-380)/10] * SpectralRadiance(waveLower, temp) * 10e-9;
+                waveLower += 10;
+        }
+        
+        return integral;
+}
+
+
+double OOK2IntErrorModel::getTemperature()
+{
+  return temp;
+}
+
+// Virtual method from Error Model.  Determinds what packets to be dropped.
+bool OOK2IntErrorModel::DoCorrupt(Ptr<Packet> p){
+	NS_LOG_FUNCTION(this << p);
+	
+	BER = calculateBER();
+	//Caculated the Packet Error Rate by finding the complement of the probablility 
+	//that a packets is not corrupted
+	double per = 1.0 - (double)std::pow((double)(1.0 - BER), static_cast<double>(8*p->GetSize()));
+        //Randomizies a number and if its less than the PER the packet is rejected
+	double rnd  = (double) rand()/(double)(RAND_MAX);
+        return (rnd < per);
+}
+void OOK2IntErrorModel::DoReset(void){
+
+
+}
+
+//Calculates BER from SNR
+double OOK2IntErrorModel::calculateBER (){
+//SNR calculation
+SNR = (std::pow((Rx*res),2)/No);
+INR = (std::pow((IntRx*Intres),2)/IntNo);
+//std::cout << "SNR : " << SNR << std::endl;
+//std::cout << "INR : " << INR << std::endl;
+//std::cout << "IntRx : " << IntRx << std::endl;
+//std::cout << "Intres : " << Intres << std::endl;
+//std::cout << "IntNo : " << IntNo << std::endl;
+double BER;
+if(SNR > 0){
+//BER calculation
+BER = 0.25*erfc((std::sqrt(SNR) + std::sqrt(INR))/std::sqrt(2)) + 0.25*erfc((std::sqrt(SNR) - std::sqrt(INR))/std::sqrt(2));
+}else{
+BER = 1;
+}
+
+
+return BER;
+}
+//Set Noise power
+
+void OOK2IntErrorModel::setNo ( int lower, int upper, int T ,double B, double A , double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+
+       temp = T;
+       Rx = rx; 
+
+       res = integralRes(lower, upper)/integralPlanck(lower, upper);
+       
+   
+	double q = 1.60217e-19;	//electronic charge [Coulombs]
+	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
+	double I2 = 0.5620;	//noise bandwidth factor
+	double I3 = 0.0868;	//noise bandwidth factor
+	double Ib = 100e-6;	//photocurrent due to background radiation  [microA]
+	double Gol = 10;	//open-loop voltage gain
+	double Cpd = 112e-12; 	//fixed capacitance of photodetector per unit area  [pF/cm^2]
+	double gm = 30e-3;	//FET transconductance	[mS]
+	double	gamma = 1.5;	//FET channel noise factor
+	double abs_temp = 295;	//Absolute temperature [K]
+	double shot_var, thermal_var;
+
+	//shot variance
+	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
+       // std::cout<<"RES : " << res << std::endl;        
+        //std::cout<<"SHOT : " << shot_var << std::endl;   
+
+	//thermal variance
+	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
+	
+	No = shot_var + thermal_var;
+}
+
+void OOK2IntErrorModel::setIntNo (int lower, int upper, int T ,double B, double A, double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+
+       Inttemp = T;
+       IntRx = rx; 
+       Intres = integralRes(lower, upper)/integralPlanck(lower, upper);
+       
+   
+	double q = 1.60217e-19;	//electronic charge [Coulombs]
+	double k = 1.38064e-23;	//Boltzmann constant	[m^2 kg s^-2 K^-1]
+	double I2 = 0.5620;	//noise bandwidth factor
+	double I3 = 0.0868;	//noise bandwidth factor
+	double Ib = 100e-6;	//photocurrent due to background radiation  [microA]
+	double Gol = 10;	//open-loop voltage gain
+	double Cpd = 112e-12; 	//fixed capacitance of photodetector per unit area  [pF/cm^2]
+	double gm = 30e-3;	//FET transconductance	[mS]
+	double	gamma = 1.5;	//FET channel noise factor
+	double abs_temp = 295;	//Absolute temperature [K]
+	double shot_var, thermal_var;
+
+	//shot variance
+	shot_var = 2*q*Intres*IntRx*B + 2*q*Ib*I2*B;
+       // std::cout<<"RES : " << res << std::endl;        
+        //std::cout<<"SHOT : " << shot_var << std::endl;   
+
+	//thermal variance
+	thermal_var = ((8*M_PI*k*abs_temp)/Gol)*Cpd*A*I2*(std::pow(B, 2)) + ((16*(std::pow(M_PI, 2))*k*abs_temp*gamma)/gm)*(std::pow(Cpd, 2))*(std::pow(A, 2))*I3*(std::pow(B, 3));
+	
+	IntNo = shot_var + thermal_var;
+}
+
+
+//Gets Noise power
+double OOK2IntErrorModel::getNo(void){
+return No;
+}
+//Gets BER
+double OOK2IntErrorModel::getBER(void){
+return BER;
+}
+//Gets SNR
+double OOK2IntErrorModel::getSNR(void){
+return SNR;
+}
+double OOK2IntErrorModel::getINR(void){
+return INR;
+}
+
+} // namespace ns3
