@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE("PAMErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (PAMErrorModel);
 
-
+//Values of the Standard Luminocity Functions
 double V_lambda2[] = { 
 0.000039, 0.000120, 0.000396, 0.001210, 0.004000, 0.011600, 0.023000, 
 0.038000, 0.060000, 0.090980, 0.139020, 0.208020, 0.323000,  0.503000, 
@@ -42,7 +42,7 @@ double V_lambda2[] = {
 0.757000, 0.631000, 0.503000, 0.381000, 0.265000, 0.175000, 0.107000, 
 0.061000, 0.032000, 0.017000, 0.008210, 0.004102, 0.002091, 0.001047, 
 0.000520, 0.000249, 0.000120, 0.000060, 0.000030 };
-
+//General values for Respositvity 
 double Response2[] = { 
 0.150, 0.160, 0.170, 0.190, 0.200, 0.220, 0.230, 0.240, 0.250, 0.260, 
 0.270, 0.280, 0.300, 0.320, 0.330, 0.350, 0.360, 0.370, 0.375, 0.380, 
@@ -73,6 +73,7 @@ TypeId OOKErrorModel::GetTypeId (void)
   return tid;
 }
 */
+//Calculates Spectral Radiance base on wave length and Blackbody temp of LED
 double PAMErrorModel::SpectralRadiance( int wavelength, double temperature){
         double spectral_rad;
         double h = 6.62606957e-34; //Planck's constant
@@ -174,7 +175,7 @@ ser = 1;
 
 return ser;
 }
-//Set Noise power
+//Set Noise power and Received Power
 
 void PAMErrorModel::setNo (int lower, int upper, int T ,double B, double A, double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
        wavelength_lower = lower;
@@ -217,7 +218,7 @@ return SER;
 double PAMErrorModel::getSNR(void){
 return SNR;
 }
-
+//Sets the Symbol size of the M-Pam
 void PAMErrorModel::setM(double m){
  M = m;
 }
