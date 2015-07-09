@@ -21,7 +21,7 @@ class Packet;
 class OOK2IntErrorModel : public ErrorModel
 {
 public:
-
+//Constructor and Deconstructor
   OOK2IntErrorModel ();
    ~OOK2IntErrorModel ();
 
@@ -29,8 +29,9 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
+//Vector for general values of standard luminocity function
   static double V_lambda[] ;
-
+//Vector for general values of Respositivity
 static double Response[] ;
 
 
@@ -42,31 +43,26 @@ static double Response[] ;
   double res;  //Responsitivity of Receiver
   double SNR;  //Signal to noise ratio
   double temp;  // Blackbody temp of LED
-  double Inttemp; 
-  double IntRx;
-  double Intres; 
-  double IntNo;    
-  double INR;  
+  double Inttemp; //Interferer's Temp
+  double IntRx;  //Interferer's Received power
+  double Intres; //Interferer's Respositivity
+  double IntNo;    //Interferer's Noise power
+  double INR;  //Interference to Noise ratio
 
-  double calculateBER ();
+  double calculateBER (); //Calculates BER
 
-  void calculateEb();
-
+//Used to calculate Responsitivty and Lumanince. 
   double SpectralRadiance(int wavelength, double temperature);
-
   double integralLum(int lower, int upper);
-
   double integralPlanck(int lower, int upper);
-
   double integralRes(int lower, int upper);
+
 
   double getTemperature();
 
-  void setNo (int lower, int upper, int T ,double n, double a, double rx);
+  void setNo (int lower, int upper, int T ,double n, double a, double rx); //Sets Noise Power and Received Power
 
-   void setIntNo (int lower, int upper, int T ,double n, double a , double rx);
-
-  double getEb(void);
+   void setIntNo (int lower, int upper, int T ,double n, double a , double rx);//Sets the Interferer's Noise Power and Received Power
 
   double getBER(void);
   
@@ -77,16 +73,16 @@ static double Response[] ;
    
 private:
 
-virtual bool DoCorrupt(Ptr<Packet> p);
+virtual bool DoCorrupt(Ptr<Packet> p); //Virtual Method called by the Simulator to determin if a packet is corrupted or not
 
-virtual void DoReset(void);
-
-
-double m_rate;
+virtual void DoReset(void); //Virtual Method does nothing
 
 
+double m_rate; // not used
 
-Ptr<RandomVariableStream> m_ranvar;
+
+
+Ptr<RandomVariableStream> m_ranvar;// not used
   
 };
 
