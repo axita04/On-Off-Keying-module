@@ -153,7 +153,11 @@ double OOK2IntErrorModel::calculateBER (){
 //SNR calculation
 SNR = (std::pow((Rx*res),2)/No);
 INR = (std::pow((IntRx*Intres),2)/IntNo);
-
+//std::cout << "SNR : " << SNR << std::endl;
+//std::cout << "INR : " << INR << std::endl;
+//std::cout << "IntRx : " << IntRx << std::endl;
+//std::cout << "Intres : " << Intres << std::endl;
+//std::cout << "IntNo : " << IntNo << std::endl;
 double BER;
 if(SNR > 0){
 //BER calculation
@@ -241,6 +245,8 @@ return BER;
 double OOK2IntErrorModel::getSNR(void){
 return SNR;
 }
-
+double OOK2IntErrorModel::getINR(void){
+return INR;
+}
 
 } // namespace ns3
