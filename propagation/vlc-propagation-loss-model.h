@@ -66,6 +66,7 @@ public:
   double GetRxPower(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double dotProduct(std::vector<double> v1, std::vector<double> v2) const; 
   double magnitude(std::vector<double> v) const; 
+  double calculateIlluminance(Ptr<MobilityModel> a, Ptr<MobilityModel> b);
 
 
 private:
@@ -82,7 +83,6 @@ private:
    * \returns
    */
   VLCPropagationLossModel & operator = (const VLCPropagationLossModel &);
-  double calculateIlluminance(Ptr<MobilityModel> a, Ptr<MobilityModel> b);
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   virtual int64_t DoAssignStreams (int64_t stream);
   double m_TxPower;
