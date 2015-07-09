@@ -40,7 +40,8 @@ public:
   int wavelength_lower; //Lower bound WaveLength
   int wavelength_upper; //Upper bound Wavelength
   double temp;  // Blackbody temp of LED
-
+  static double V_lambda[];
+  static double Response[];
 
   double calculateBER ();
 
@@ -60,9 +61,9 @@ public:
 
   double getTemperature();
 
-  void setNo (int lower, int upper, int T ,double n, double a);
+  void setNo (int lower, int upper, int T ,double n, double a, double SetRx);
 
-  void setRx (double x);
+  //void setRx (double x);
 
   double getEb(void);
 
