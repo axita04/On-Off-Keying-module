@@ -223,5 +223,8 @@ void PAMErrorModel::setM(double m){
  M = m;
 }
 
+int PAMErrorModel::getM(void){
+return M;
+}
 
 } // namespace ns3
