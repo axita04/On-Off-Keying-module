@@ -41,6 +41,8 @@ public:
   int wavelength_upper; //Upper bound Wavelength
   double temp;  // Blackbody temp of LED
   double M; //Size of Symbol
+  static double V_lambda[];
+  static double Response[];
 
   double calculateSER (); //Calculates SER
 
