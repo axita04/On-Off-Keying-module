@@ -62,6 +62,8 @@ public:
   void setNo (int lower, int upper, int T ,double n, double a , double rx);// Sets Noise and Received Power
   
   void setM (double m); //Sets the size of Symbol
+  
+  int getM(void);
 
   double getSER(void); //Returns Symbol Error Rate 
   
