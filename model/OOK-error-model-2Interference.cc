@@ -171,11 +171,11 @@ return BER;
 }
 //Set Noise power and Received Power
 
-void OOK2IntErrorModel::setNo ( int lower, int upper, int T ,double B, double A , double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+void OOK2IntErrorModel::setNo ( int lower, int upper, int T ,double B, double A , double rx, double intrx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
 
        temp = T;
        Rx = rx; 
-
+	IntRx = intrx;
        res = integralRes(lower, upper)/integralPlanck(lower, upper);
        
    
@@ -192,7 +192,7 @@ void OOK2IntErrorModel::setNo ( int lower, int upper, int T ,double B, double A 
 	double shot_var, thermal_var;
 
 	//shot variance
-	shot_var = 2*q*res*Rx*B + 2*q*Ib*I2*B;
+	shot_var = 2*q*res*(Rx+IntRx)*B + 2*q*Ib*I2*B;
        // std::cout<<"RES : " << res << std::endl;        
         //std::cout<<"SHOT : " << shot_var << std::endl;   
 
@@ -202,10 +202,10 @@ void OOK2IntErrorModel::setNo ( int lower, int upper, int T ,double B, double A 
 	No = shot_var + thermal_var;
 }
 
-void OOK2IntErrorModel::setIntNo (int lower, int upper, int T ,double B, double A, double rx){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
+void OOK2IntErrorModel::setIntNo (int lower, int upper, int T ,double B, double A){	//B is the Bandwidth of the electrical filter  [b/s] and photodetector Area	[cm^2
 
        Inttemp = T;
-       IntRx = rx; 
+       //IntRx = rx; 
        Intres = integralRes(lower, upper)/integralPlanck(lower, upper);
        
    
@@ -222,7 +222,7 @@ void OOK2IntErrorModel::setIntNo (int lower, int upper, int T ,double B, double 
 	double shot_var, thermal_var;
 
 	//shot variance
-	shot_var = 2*q*Intres*IntRx*B + 2*q*Ib*I2*B;
+	shot_var = 2*q*Intres*(IntRx+Rx)*B + 2*q*Ib*I2*B;
        // std::cout<<"RES : " << res << std::endl;        
         //std::cout<<"SHOT : " << shot_var << std::endl;   
 
