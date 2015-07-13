@@ -60,9 +60,9 @@ static double Response[] ;
 
   double getTemperature();
 
-  void setNo (int lower, int upper, int T ,double n, double a, double rx); //Sets Noise Power and Received Power
+  void setNo (int lower, int upper, int T ,double n, double a, double rx, double intrx); //Sets Noise Power and Received Power
 
-   void setIntNo (int lower, int upper, int T ,double n, double a , double rx);//Sets the Interferer's Noise Power and Received Power
+   void setIntNo (int lower, int upper, int T ,double n, double a);//Sets the Interferer's Noise Power and Received Power
 
   double getBER(void);
   
