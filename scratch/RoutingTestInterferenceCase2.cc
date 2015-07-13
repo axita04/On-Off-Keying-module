@@ -201,13 +201,13 @@ NetDeviceContainer ndAp_Router = p2p.Install(Ap, RouterAp);
   VPLM2.SetConcentratorGain(70,1.5);
 
 
-  em2->setNo(380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(),VPLM.GetRxPower(a,b));
-//std::cout << "INTRx : " << VPLM.GetRxPower(d,b) << std::endl;
-  em2->setIntNo( 380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(), VPLM2.GetRxPower(d,b));
+  em2->setNo(380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea(),VPLM.GetRxPower(a,b), VPLM2.GetRxPower(d,b));
 
-  em3->setNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea(),VPLM2.GetRxPower(d,e));
+  em2->setIntNo( 380,380,5000,100.0e6, VPLM.GetPhotoDetectorArea());
 
-em3->setIntNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea(),VPLM.GetRxPower(a,e));
+  em3->setNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea(),VPLM2.GetRxPower(d,e), VPLM.GetRxPower(a,e));
+
+  em3->setIntNo(380,380,5000,100.0e6, VPLM2.GetPhotoDetectorArea());
 
   ndRouterAp_RelayMt1.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
   ndRouterAp_RelayMt1.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em2));
